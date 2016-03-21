@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys, locale, wb_engine.read, datetime, os
+import sys, locale, wb_engine.read, datetime, os, optparse
 from wb_engine.utility import DateUtility
 from wb_engine.io import IO
 from wb_engine.preprocessing import PreProcessing
@@ -7,58 +7,81 @@ from wb_engine.engine import WbEngine
 from wb_engine.report_excel.report_generator import ExcelReportGenerator
 from wb_engine.io_template import IoTemplate
 
+parser = optparse.OptionParser('usage run.py -d <default>')
+parser.add_option(
+    '-d', '--default',
+    action='store_true',
+    dest='default',
+    default=False,
+    help='-d, --default : set default options')
+
+(option, args) = parser.parse_args()
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 #print sys.getdefaultencoding()
 #print locale.getpreferredencoding()
 
 print '*************************************************'
-print 'Shipping indstry Early Warning System Version 1.0'
+print 'Shipping indstry Early Warning System Version 1.2'
 print '*************************************************'
-print ''
-print 'Please enter input parameters below'
-
-
-nts = input('NTS(0 ~ 1):')
-t0 = str(input('t0(Time_Start:YYYYMM):')) + '01'
-t1 = str(input('t1(Time_End:YYYYMM):')) + '01'
-t2 = str(input('t2(Learning_Time:YYYYMM):')) + '01'
-pca_thres = float(input('pca threshold(0 ~ 1):'))
-intv = input('lag(MM):')
-lag_cut = input('lag_cut(MM):')
-scaling = str(input('scaling(yes:1, no:0):'))
-hp_filter = input('hp_filter(0 ~ 100)%:')
-
 
 # INPUT SETTING ##################################
-params = {}
-params['t0'] = datetime.date(2004, 1, 1)         # 데이터 초기 시점
-params['t1'] = datetime.date(2012, 3, 1)         # 데이터 로딩 마지막 시점
-params['t2'] = datetime.date(2015, 3, 1)         # 데이터 러닝 마지막 시점
-params['nts_thres'] = 0.5                        # NTS 필터 값
-params['hp_filter'] = 10                         # HP필터 값
-params['pca_thres'] = 0.9                        # PCA 필터 값
-params['dv_dir'] = 'up'                          # 종속변수 위기 방향
-params['intv'] = 6                               # 위기발생유효기간
-params['lag_cut'] = 6                             # 위기발생 인식기간 제한
-params['thres_cut'] = 0.2                        # 상위 20% 컷
-params['dv_thres'] = 7                           # 종속변수 임계치
-params['scaling'] = '1'                          # 데이터 스케일링 유무
+paramsDefault = {
+    'nts_thres': 0.5                        # NTS 필터 값
+    ,'t0': datetime.date(2004, 1, 1)         # 데이터 초기 시점
+    ,'t1': datetime.date(2012, 3, 1)         # 데이터 로딩 마지막 시점
+    ,'t2': datetime.date(2015, 3, 1)         # 데이터 러닝 마지막 시점
+    ,'hp_filter': 10                         # HP필터 값
+    ,'pca_thres': 0.9                        # PCA 필터 값
+    ,'dv_dir': 'up'                          # 종속변수 위기 방향
+    ,'intv': 6                               # 위기발생유효기간
+    ,'lag_cut': 6                             # 위기발생 인식기간 제한
+    ,'thres_cut': 0.2                        # 상위 20% 컷
+    ,'dv_thres': 7                           # 종속변수 임계치
+    ,'scaling': '1'                          # 데이터 스케일링 유무
+}
 ##################################################
 
+if option.default:
+    params = {}
+    params['nts_thres'] = paramsDefault['nts_thres']
+    params['t0'] = paramsDefault['t0']
+    params['t1'] = paramsDefault['t1']
+    params['t2'] = paramsDefault['t2']
+    params['pca_thres'] = paramsDefault['pca_thres']
+    params['intv'] = paramsDefault['intv']
+    params['lag_cut'] = paramsDefault['lag_cut']
+    params['scaling'] = paramsDefault['scaling']
+    params['hp_filter'] = paramsDefault['hp_filter']
+else:
+    print ''
+    print 'Please enter input parameters below'
 
-# 입력받은 인풋으로 한번더 #######################
+    # 입력 인풋으로 한번더 #######################
+    nts = raw_input('NTS(0 ~ 1):')
+    t0 = raw_input('t0(Time_Start:YYYYMM):')
+    t1 = raw_input('t1(Time_End:YYYYMM):')
+    t2 = raw_input('t2(Learning_Time:YYYYMM):')
+    pca_thres = raw_input('pca threshold(0 ~ 1):')
+    intv = raw_input('lag(MM):')
+    lag_cut = raw_input('lag_cut(MM):')
+    scaling = str(raw_input('scaling(yes:1, no:0):'))
+    hp_filter = raw_input('hp_filter(0 ~ 100)%:')
 
-params['nts_thres'] = nts
-params['t0'] = datetime.datetime.strptime(str(t0), '%Y%m%d').date()
-params['t1'] = datetime.datetime.strptime(str(t1), '%Y%m%d').date()
-params['t2'] = datetime.datetime.strptime(str(t2), '%Y%m%d').date()
-params['pca_thres'] = pca_thres
-params['intv'] = int(intv)
-params['lag_cut'] = int(lag_cut)
-params['scaling'] = scaling
-params['hp_filter'] = hp_filter
+    params = {}
+    params['nts_thres'] = nts and float(nts) or paramsDefault['nts_thres']
+    params['t0'] = t0 and datetime.datetime.strptime(str(t0) + '01', '%Y%m%d').date() or paramsDefault['t0']
+    params['t1'] = t0 and datetime.datetime.strptime(str(t0) + '01', '%Y%m%d').date() or paramsDefault['t1']
+    params['t2'] = t0 and datetime.datetime.strptime(str(t0) + '01', '%Y%m%d').date() or paramsDefault['t2']
+    params['pca_thres'] = pca_thres and float(pca_thres) or paramsDefault['pca_thres']
+    params['intv'] = intv and int(intv) or paramsDefault['intv']
+    params['lag_cut'] = lag_cut and int(lag_cut) or paramsDefault['lag_cut']
+    params['scaling'] = scaling or paramsDefault['scaling']
+    params['hp_filter'] = hp_filter or paramsDefault['hp_filter']
 
+# for x in params:
+#     print "%s : %s" %(x, params[x])
 
 ##################################################
 
