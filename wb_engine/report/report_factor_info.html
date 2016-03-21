@@ -1,0 +1,351 @@
+﻿﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset='utf-8'>    
+    <title>
+해운시장 조기경보시스템 구축사업 중간보고 | 팩터별 정보
+</title>
+
+    <!-- jQuery -->
+    <script src="js/jquery-1.10.2.js"></script>
+
+    <link href='http://fonts.googleapis.com/css?family=Droid+Serif|Open+Sans' rel='stylesheet' type='text/css'>
+
+    <!-- JQuery UI -->
+    <script src="js/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+
+    <!-- bootstrap -->
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- 공통 css -->
+    <link href="css/common.css" rel="stylesheet">
+
+    <!-- Sb-admin -->
+    <script src="js/sb-admin.js"></script>
+    <link href="css/sb-admin.css" rel="stylesheet">    
+        
+    <!-- High chart -->
+    <script src="content/highcharts/highcharts.js"></script>
+    <script src="content/highcharts/highcharts-3d.js"></script>
+    <script src="content/highcharts/highcharts-more.js"></script>
+
+    <!-- High stock -->
+    <script src="http://code.highcharts.com/stock/highstock.js"></script>
+    <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+
+    <!-- Font Awesome -->
+    <link href="fonts/font-awesome/css/font-awesome.css" rel="stylesheet">
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="fonts/NanumPenScript/stylesheet.css">
+    <link href='http://fonts.googleapis.com/css?family=Changa+One|Hammersmith+One|Orbitron' rel='stylesheet' type='text/css'>    
+
+    <!--  데이터테이블 -->
+    <script type="text/javascript" language="javascript" src="content/datatable/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" language="javascript" src="content/datatable/dataTables.bootstrap.js"></script>
+    <link rel="stylesheet" type="text/css" href="content/datatable/dataTables.bootstrap.css">
+
+    <!-- Headroom -->
+    <script type="text/javascript" language="javascript" src="content/headroom/headroom.min.js"></script>
+    <script type="text/javascript" language="javascript" src="content/headroom/jQuery.headroom.js"></script>
+
+    <!-- Responsive Table -->
+    <script type="text/javascript" language="javascript" src="content/responsive-tables/responsive-tables.js"></script>
+    <link rel="stylesheet" type="text/css" href="content/responsive-tables/responsive-tables.css">
+
+    <script>
+        if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+            var msViewportStyle = document.createElement("style")
+            msViewportStyle.appendChild(
+              document.createTextNode(
+                "@-ms-viewport{width:auto!important}")
+            )
+            document.getElementsByTagName("head")[0].appendChild(msViewportStyle)
+        }
+    </script>
+
+    <script>
+        $(function () {
+            console.log($('#bottom_nav'));
+            $('#bottom_nav').headroom({ offset: 10 });    
+        });
+    </script>
+
+    <style>
+        .contents{
+            margin-top:40px;
+        }
+
+        .number{
+            text-align:right;
+        }
+
+        table thead tr th{
+            font-size:small;
+            text-align:center;
+        }
+    </style>
+
+    
+
+<style>
+    @media screen and (max-width: 640px) {
+        table {
+            overflow-x: auto;
+            display: block;
+        }
+    }
+
+    table tbody tr td {
+        font-size: small;
+        min-width: 55px;
+    }
+
+    table thead tr td {
+        font-size: small;
+        text-align: center;
+    }
+</style>
+
+
+
+</head>
+<body>
+    <div id="wrap" style="background-color:white">
+        <div class="container">
+            <div class="menu">
+                <nav id="top_bar" class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0;">
+                    <div class="container">
+                        <div class="navbar-header" style="width:100%">
+                            
+                            <a class="navbar-brand" href="index.html" style="color: black;">
+해운시장 조기경보시스템 구축사업 중간보고 | 팩터별 정보(차트)
+</a>                            
+                            <a href="file:./report.xlsx" class="navbar-brand pull-right"><img src="img/excel.png" height="25px;" /> <img src="img/brand.png" height="25px;" /></a>
+
+</div><!-- /.navbar-header -->
+                    </div>
+                </nav><!-- /.navbar-static-top -->
+            </div>
+            
+<div class="contents">
+    <!-- polar chart area-->
+    <table id="table_iv_info" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>CODE</th>                
+                <th>EIGENVALUE%</th>
+                <th>방향성</th>
+                <th>NTS</th>
+                <th>임계치</th>                
+                <th>A</th>
+                <th>B</th>
+                <th>C</th>
+                <th>D</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            <tr>                
+                <td><a href="sub/factor_FAC10.html" target="_blank">FAC10</a></td>
+                <td class="number">3.49</td>
+                <td>down</td>
+                <td class="number">0.28</td>
+                <td class="number">-0.9</td>                
+                <td class="number">12</td>
+                <td class="number">17</td>
+                <td class="number">11</td>
+                <td class="number">97</td>
+            </tr>
+            
+            <tr>                
+                <td><a href="sub/factor_FAC11.html" target="_blank">FAC11</a></td>
+                <td class="number">1.34</td>
+                <td>down</td>
+                <td class="number">0.74</td>
+                <td class="number">0.9</td>                
+                <td class="number">23</td>
+                <td class="number">85</td>
+                <td class="number">0</td>
+                <td class="number">29</td>
+            </tr>
+            
+            <tr>                
+                <td><a href="sub/factor_FAC12.html" target="_blank">FAC12</a></td>
+                <td class="number">1.92</td>
+                <td>up</td>
+                <td class="number">0.51</td>
+                <td class="number">0.97</td>                
+                <td class="number">7</td>
+                <td class="number">18</td>
+                <td class="number">16</td>
+                <td class="number">96</td>
+            </tr>
+            
+            <tr>                
+                <td><a href="sub/factor_FAC13.html" target="_blank">FAC13</a></td>
+                <td class="number">1.3</td>
+                <td>down</td>
+                <td class="number">0.76</td>
+                <td class="number">-0.03</td>                
+                <td class="number">15</td>
+                <td class="number">57</td>
+                <td class="number">8</td>
+                <td class="number">57</td>
+            </tr>
+            
+            <tr>                
+                <td><a href="sub/factor_FAC8.html" target="_blank">FAC8</a></td>
+                <td class="number">1.41</td>
+                <td>down</td>
+                <td class="number">0.7</td>
+                <td class="number">0.9</td>                
+                <td class="number">20</td>
+                <td class="number">70</td>
+                <td class="number">3</td>
+                <td class="number">44</td>
+            </tr>
+            
+            <tr>                
+                <td><a href="sub/factor_FAC9.html" target="_blank">FAC9</a></td>
+                <td class="number">1.3</td>
+                <td>up</td>
+                <td class="number">0.76</td>
+                <td class="number">-1.24</td>                
+                <td class="number">21</td>
+                <td class="number">80</td>
+                <td class="number">2</td>
+                <td class="number">34</td>
+            </tr>
+            
+            <tr>                
+                <td><a href="sub/factor_FAC2.html" target="_blank">FAC2</a></td>
+                <td class="number">2.6</td>
+                <td>down</td>
+                <td class="number">0.38</td>
+                <td class="number">-2.4</td>                
+                <td class="number">10</td>
+                <td class="number">19</td>
+                <td class="number">13</td>
+                <td class="number">95</td>
+            </tr>
+            
+            <tr>                
+                <td><a href="sub/factor_FAC3.html" target="_blank">FAC3</a></td>
+                <td class="number">2.78</td>
+                <td>down</td>
+                <td class="number">0.35</td>
+                <td class="number">-1.15</td>                
+                <td class="number">18</td>
+                <td class="number">32</td>
+                <td class="number">5</td>
+                <td class="number">82</td>
+            </tr>
+            
+            <tr>                
+                <td><a href="sub/factor_FAC0.html" target="_blank">FAC0</a></td>
+                <td class="number">7.02</td>
+                <td>up</td>
+                <td class="number">0.14</td>
+                <td class="number">1.91</td>                
+                <td class="number">17</td>
+                <td class="number">12</td>
+                <td class="number">6</td>
+                <td class="number">102</td>
+            </tr>
+            
+            <tr>                
+                <td><a href="sub/factor_FAC1.html" target="_blank">FAC1</a></td>
+                <td class="number">1.88</td>
+                <td>down</td>
+                <td class="number">0.52</td>
+                <td class="number">-0.99</td>                
+                <td class="number">8</td>
+                <td class="number">21</td>
+                <td class="number">15</td>
+                <td class="number">93</td>
+            </tr>
+            
+            <tr>                
+                <td><a href="sub/factor_FAC6.html" target="_blank">FAC6</a></td>
+                <td class="number">1.29</td>
+                <td>up</td>
+                <td class="number">0.77</td>
+                <td class="number">1.31</td>                
+                <td class="number">6</td>
+                <td class="number">23</td>
+                <td class="number">17</td>
+                <td class="number">91</td>
+            </tr>
+            
+            <tr>                
+                <td><a href="sub/factor_FAC7.html" target="_blank">FAC7</a></td>
+                <td class="number">1.8</td>
+                <td>up</td>
+                <td class="number">0.55</td>
+                <td class="number">1.32</td>                
+                <td class="number">8</td>
+                <td class="number">22</td>
+                <td class="number">15</td>
+                <td class="number">92</td>
+            </tr>
+            
+            <tr>                
+                <td><a href="sub/factor_FAC4.html" target="_blank">FAC4</a></td>
+                <td class="number">1.98</td>
+                <td>down</td>
+                <td class="number">0.5</td>
+                <td class="number">-1.28</td>                
+                <td class="number">8</td>
+                <td class="number">20</td>
+                <td class="number">15</td>
+                <td class="number">94</td>
+            </tr>
+            
+            <tr>                
+                <td><a href="sub/factor_FAC5.html" target="_blank">FAC5</a></td>
+                <td class="number">2.23</td>
+                <td>up</td>
+                <td class="number">0.44</td>
+                <td class="number">1.78</td>                
+                <td class="number">9</td>
+                <td class="number">20</td>
+                <td class="number">14</td>
+                <td class="number">94</td>
+            </tr>
+            
+        </tbody>
+    </table>
+    <hr />
+
+</div>
+
+        </div>        
+        <div style="text-align:center; margin-bottom:30px;"><small>해운시장 조기경보시스템</small><br />2015.10.07</div>
+    </div>            
+</body>
+
+<script>
+    $(function () {
+        console.log('test')
+        data_table = $('#table_iv_info').dataTable(
+            {
+                "dom": '<>tp<"datatable_filter"f>',
+                "order": [[1, "desc"]],
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bInfo": false,
+                "bAutoWidth": false
+            });
+        $('table').show()
+    });
+</script>
+
+</html>

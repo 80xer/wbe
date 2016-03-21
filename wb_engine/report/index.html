@@ -1,0 +1,1134 @@
+﻿﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset='utf-8'>    
+    <title>
+해운시장 조기경보시스템 시뮬레이션 보고서
+</title>
+
+    <!-- jQuery -->
+    <script src="js/jquery-1.10.2.js"></script>
+
+    <link href='http://fonts.googleapis.com/css?family=Droid+Serif|Open+Sans' rel='stylesheet' type='text/css'>
+
+    <!-- JQuery UI -->
+    <script src="js/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+
+    <!-- bootstrap -->
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- 공통 css -->
+    <link href="css/common.css" rel="stylesheet">
+
+    <!-- Sb-admin -->
+    <script src="js/sb-admin.js"></script>
+    <link href="css/sb-admin.css" rel="stylesheet">    
+        
+    <!-- High chart -->
+    <script src="content/highcharts/highcharts.js"></script>
+    <script src="content/highcharts/highcharts-3d.js"></script>
+    <script src="content/highcharts/highcharts-more.js"></script>
+
+    <!-- High stock -->
+    <script src="http://code.highcharts.com/stock/highstock.js"></script>
+    <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+
+    <!-- Font Awesome -->
+    <link href="fonts/font-awesome/css/font-awesome.css" rel="stylesheet">
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="fonts/NanumPenScript/stylesheet.css">
+    <link href='http://fonts.googleapis.com/css?family=Changa+One|Hammersmith+One|Orbitron' rel='stylesheet' type='text/css'>    
+
+    <!--  데이터테이블 -->
+    <script type="text/javascript" language="javascript" src="content/datatable/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" language="javascript" src="content/datatable/dataTables.bootstrap.js"></script>
+    <link rel="stylesheet" type="text/css" href="content/datatable/dataTables.bootstrap.css">
+
+    <!-- Headroom -->
+    <script type="text/javascript" language="javascript" src="content/headroom/headroom.min.js"></script>
+    <script type="text/javascript" language="javascript" src="content/headroom/jQuery.headroom.js"></script>
+
+    <!-- Responsive Table -->
+    <script type="text/javascript" language="javascript" src="content/responsive-tables/responsive-tables.js"></script>
+    <link rel="stylesheet" type="text/css" href="content/responsive-tables/responsive-tables.css">
+
+    <script>
+        if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+            var msViewportStyle = document.createElement("style")
+            msViewportStyle.appendChild(
+              document.createTextNode(
+                "@-ms-viewport{width:auto!important}")
+            )
+            document.getElementsByTagName("head")[0].appendChild(msViewportStyle)
+        }
+    </script>
+
+    <script>
+        $(function () {
+            console.log($('#bottom_nav'));
+            $('#bottom_nav').headroom({ offset: 10 });    
+        });
+    </script>
+
+    <style>
+        .contents{
+            margin-top:40px;
+        }
+
+        .number{
+            text-align:right;
+        }
+
+        table thead tr th{
+            font-size:small;
+            text-align:center;
+        }
+    </style>
+
+    
+
+<style>
+    @media screen and (max-width: 640px) {
+        table {
+            overflow-x: auto;
+            display: block;
+        }
+    }
+
+    table tbody tr td {
+        font-size: small;
+        min-width: 55px;
+    }
+
+    table thead tr td {
+        font-size: small;
+        text-align: center;
+    }
+
+    .btn{
+        text-align:left;
+        padding-left:10px;
+    }
+
+</style>
+
+
+
+</head>
+<body>
+    <div id="wrap" style="background-color:white">
+        <div class="container">
+            <div class="menu">
+                <nav id="top_bar" class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0;">
+                    <div class="container">
+                        <div class="navbar-header" style="width:100%">
+                            
+                            <a class="navbar-brand" href="index.html" style="color: black;">
+해운시장 조기경보시스템  시뮬레이션 보고서
+</a>                            
+                            <a href="file:./report.xlsx" class="navbar-brand pull-right"><img src="img/excel.png" height="25px;" /> <img src="img/brand.png" height="25px;" /></a>
+
+</div><!-- /.navbar-header -->
+                    </div>
+                </nav><!-- /.navbar-static-top -->
+            </div>
+            
+<div class="contents">
+    
+    <!--
+    <div style="text-align:center;">
+        <img class="img-circle" src="img/intro.jpg" width="70%" />
+    </div>
+    -->
+
+    <div id="chart" style="margin-top:60px;">        
+    </div>
+
+    <hr/>
+
+    <!-- polar chart area-->
+    <div class="col-md-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">개별레포트</div>
+            <div class="panel-body">
+                <a class="btn btn-default btn-block" href="report_iv_info.html" target=""> 독립변수별 정보</a>
+                <!--<a class="btn btn-default btn-block" href="report_iv_info_chart.html" target="_blank"> 독립변수별 정보(차트)</a>-->
+                <a class="btn btn-default btn-block" href="report_factor_info.html" target=""> 팩터별 정보</a>
+                <!--<a class="btn btn-default btn-block" href="report_factor_info_chart.html" target="_blank"> 팩터별 정보(차트)</a>-->
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">옵션</div>
+            <div class="panel-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>옵션</th>
+                            <th>값</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>T0</td>
+                            <td>2004-01-01</td>
+                        </tr>
+                        <tr>
+                            <td>T1</td>
+                            <td>2015-12-01</td>
+                        </tr>
+                        <tr>
+                            <td>HP filter 계수</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>NTS </td>
+                            <td>0.5</td>
+                        </tr>
+                        <tr>
+                            <td>PCA 변동성커버</td>
+                            <td>90.0%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-12">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">투입 독립변수(총 134개 독립변수 투입)</div>
+            <div class="panel-body">
+                <table id="info" class="table table-bordered table-stripted">
+                    <thead>
+                        <tr>
+                            <th>코드</th>
+                            <th>그룹</th>
+                            <th>이름</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td>04.15.001.003.004</td>
+                            <td>공급지표</td>
+                            <td>제조업</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.07.001.006.004</td>
+                            <td>공급지표</td>
+                            <td>국채금리_일본국채(10년)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>53163</td>
+                            <td>수요지표</td>
+                            <td>중국석탄_Million Tonnes</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.01.007.002.010</td>
+                            <td>공급지표</td>
+                            <td>수익증권</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>16.US.03.002.001</td>
+                            <td>공급지표</td>
+                            <td>Personal consumption expenditures(개인소비지출)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>16.US.05.007.004</td>
+                            <td>공급지표</td>
+                            <td>Exports:Total(수출)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>04.20.002.002</td>
+                            <td>공급지표</td>
+                            <td>소비자기대지수</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>04.20.002.001</td>
+                            <td>공급지표</td>
+                            <td>재고순환지표</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>04.20.002.007</td>
+                            <td>공급지표</td>
+                            <td>구인구직비율</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>30879</td>
+                            <td>공급지표</td>
+                            <td>컨테이너선선복량_,000 TEU</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>98499</td>
+                            <td>운임지표</td>
+                            <td>CCFI지수_Index</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>30932</td>
+                            <td>공급지표</td>
+                            <td>컨테이너선인도량_,000 TEU</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>04.20.002.009</td>
+                            <td>공급지표</td>
+                            <td>장단기금리차</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.03.004.005</td>
+                            <td>공급지표</td>
+                            <td>외환</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>16.US.04.007.001</td>
+                            <td>공급지표</td>
+                            <td>Conference Board Consumer Confidence(컨퍼런스보드 소비자 신뢰지수)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>541309</td>
+                            <td>수요지표</td>
+                            <td>원유_M bpd</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>05.01.010.001.007</td>
+                            <td>공급지표</td>
+                            <td>구직기간 4주기준(실업률)원자료</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>09.06.004.001.005</td>
+                            <td>공급지표</td>
+                            <td>공장 및 창고</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>05.01.010.001.008</td>
+                            <td>공급지표</td>
+                            <td>고용률(전체)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>16.US.03.003.002</td>
+                            <td>공급지표</td>
+                            <td>Employment(취업자수)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>30213</td>
+                            <td>공급지표</td>
+                            <td>벌크선선복량_Million DWT</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>04.11.009.001.002</td>
+                            <td>공급지표</td>
+                            <td>국내수요</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.01.001.002</td>
+                            <td>공급지표</td>
+                            <td>본원통화</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.01.001.004</td>
+                            <td>공급지표</td>
+                            <td>광의통화(신M2)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>16.US.05.005.002</td>
+                            <td>공급지표</td>
+                            <td>Capacity Utilization:Manufacturing(설비가동률:제조업)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>06.01.010.001.001</td>
+                            <td>경제지표</td>
+                            <td>소비자물가지수 총지수_2010=100</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>29454</td>
+                            <td>공급지표</td>
+                            <td>탱커선신조선가지수_Index</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>16.US.05.007.007</td>
+                            <td>공급지표</td>
+                            <td>Imports:Total(수입)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>16.US.03.001.001</td>
+                            <td>공급지표</td>
+                            <td>Personal income(개인소득)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>16.US.03.004.001</td>
+                            <td>공급지표</td>
+                            <td>Unemployment rates:All workers (16years over)(실업률:전체)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>16.US.04.009.001</td>
+                            <td>공급지표</td>
+                            <td>Retail and food services sales,total(소매판매)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.02.003.001</td>
+                            <td>공급지표</td>
+                            <td>콜금리(1일물중개거래)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.03.009.001.003</td>
+                            <td>공급지표</td>
+                            <td>원/유로</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>04.19.010.002</td>
+                            <td>공급지표</td>
+                            <td>서비스업생산지수(도소매업제외)(전월비)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.09.002.004</td>
+                            <td>수요지표</td>
+                            <td>주요상품선물_WTI-1M_$/bbl</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.09.002.003</td>
+                            <td>수요지표</td>
+                            <td>주요상품선물_DUBAI(ASIA1M)_$/bbl</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>04.19.010.005</td>
+                            <td>공급지표</td>
+                            <td>내수출하지수(전월비)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>06.02.021.426</td>
+                            <td>경제지표</td>
+                            <td>외항운송_2010=100</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>06.02.021.424</td>
+                            <td>경제지표</td>
+                            <td>수상운송_2010=100</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.02.002.001.009</td>
+                            <td>공급지표</td>
+                            <td>주택담보대출</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>04.19.004</td>
+                            <td>공급지표</td>
+                            <td>선행지수 순환변동치</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.10.003.002.010</td>
+                            <td>공급지표</td>
+                            <td>경기선행지수(CLI)_UNITED STATES</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>12508</td>
+                            <td>공급지표</td>
+                            <td>탱커선중고선가지수_Index</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>16.US.04.007.002</td>
+                            <td>공급지표</td>
+                            <td>University of Michigan Consumer Sentiment(미시간대 소비자심리지수)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>06.01.013.002</td>
+                            <td>공급지표</td>
+                            <td>소비자물가지수 농산물및석유류제외</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>06.01.013.003</td>
+                            <td>공급지표</td>
+                            <td>농산물및석유류</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>88944</td>
+                            <td>수요지표</td>
+                            <td>싱가포르연료유_$/Tonne</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.01.006.002.020</td>
+                            <td>경제지표</td>
+                            <td>국가별수입액 미국_천달러</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14948</td>
+                            <td>경제지표</td>
+                            <td>리보금리_%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.07.001.007.004</td>
+                            <td>공급지표</td>
+                            <td>국채금리_미국국채(10년)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>16.US.04.010.001</td>
+                            <td>공급지표</td>
+                            <td>Total(자동차판매)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.01.005.002.020</td>
+                            <td>경제지표</td>
+                            <td>국가별수출액 미국_천달러</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.10.003.002.001</td>
+                            <td>공급지표</td>
+                            <td>경기선행지수(CLI)_OECD - Total</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>69813</td>
+                            <td>공급지표</td>
+                            <td>컨테이너선신조선가지수_Index</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>97738</td>
+                            <td>운임지표</td>
+                            <td>평균컨테이너선수익_$/Day</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>24447</td>
+                            <td>수요지표</td>
+                            <td>중동원유_M bpd</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>97730</td>
+                            <td>운임지표</td>
+                            <td>평균벌크선수익_$/Day</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.014.425</td>
+                            <td>공급지표</td>
+                            <td>ISM 제조업지수(계절조정)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>06.02.023.525</td>
+                            <td>경제지표</td>
+                            <td>선박용엔진_2010=100</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.01.006.002.001</td>
+                            <td>경제지표</td>
+                            <td>국가별수입액 일본_천달러</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.01.006.002.002</td>
+                            <td>경제지표</td>
+                            <td>국가별수입액 중국_천달러</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>04.43.001.001</td>
+                            <td>공급지표</td>
+                            <td>산업생산지수(원지수)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>86174</td>
+                            <td>공급지표</td>
+                            <td>중고선가지수_Index</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.02.003.012</td>
+                            <td>공급지표</td>
+                            <td>시장금리:회사채(무보증3년AA-)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>04.20.004.002</td>
+                            <td>공급지표</td>
+                            <td>서비스업생산지수(도소매업제외)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>97726</td>
+                            <td>운임지표</td>
+                            <td>평균탱커선수익_$/Day</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.07.001.003.005</td>
+                            <td>공급지표</td>
+                            <td>국채금리_프랑스국채(10년)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.10.003.002.038</td>
+                            <td>공급지표</td>
+                            <td>경기선행지수(CLI)_CHINA</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.03.009.001.012</td>
+                            <td>공급지표</td>
+                            <td>원/영국파운드</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.09.005.014</td>
+                            <td>수요지표</td>
+                            <td>CRB지수(Spot); 산업용 원자재_Pt</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.09.005.011</td>
+                            <td>수요지표</td>
+                            <td>주요상품지수_CRB지수(Spot)_Pt</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.09.005.013</td>
+                            <td>수요지표</td>
+                            <td>CRB지수(Spot); 섬유(Burlap, cotton, print cloth, wool tops)_Pt</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.09.005.012</td>
+                            <td>수요지표</td>
+                            <td>CRB지수(Spot); 금속(Copper, lead, steel, tin, zinc)_Pt</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>19597</td>
+                            <td>경제지표</td>
+                            <td>브렌트유_$/bbl</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>43520</td>
+                            <td>운임지표</td>
+                            <td>BCTI지수_Index</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.03.006.001.001</td>
+                            <td>경제지표</td>
+                            <td>평균환율_미국(달러)_통화대원</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.08.001.025.001.004</td>
+                            <td>공급지표</td>
+                            <td>미국 SP 500 Index(종가)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>29894</td>
+                            <td>공급지표</td>
+                            <td>탱커선인도량_Million DWT</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>04.19.002</td>
+                            <td>공급지표</td>
+                            <td>선행종합지수 전월비</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.02.003.023</td>
+                            <td>공급지표</td>
+                            <td>금융상품수익률:CMA(180일)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>46204</td>
+                            <td>공급지표</td>
+                            <td>벌크선계약량_DWT</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>04.19.009</td>
+                            <td>공급지표</td>
+                            <td>동행종합지수 전월비</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>04.19.008</td>
+                            <td>공급지표</td>
+                            <td>동행종합지수</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.09.003.007</td>
+                            <td>공급지표</td>
+                            <td>금</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.09.003.008</td>
+                            <td>공급지표</td>
+                            <td>은</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.02.002.001.006</td>
+                            <td>공급지표</td>
+                            <td>시설자금대출</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.01.005.002.002</td>
+                            <td>경제지표</td>
+                            <td>국가별수출액 중국_천달러</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.01.005.002.001</td>
+                            <td>경제지표</td>
+                            <td>국가별수출액 일본_천달러</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.02.002.001.007</td>
+                            <td>공급지표</td>
+                            <td>가계대출</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.03.009.002.002</td>
+                            <td>공급지표</td>
+                            <td>달러/유로</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>94431</td>
+                            <td>공급지표</td>
+                            <td>컨테이너선중고선가지수_Index</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.03.007.001.005</td>
+                            <td>경제지표</td>
+                            <td>한국 WON(외국환중개종가)_달러대원</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>45378</td>
+                            <td>공급지표</td>
+                            <td>컨테이너선발주잔량_TEU</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>29820</td>
+                            <td>수요지표</td>
+                            <td>한국연료유_$/Tonne</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.06.002.013.001</td>
+                            <td>공급지표</td>
+                            <td>EU EURO</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.09.005.001</td>
+                            <td>수요지표</td>
+                            <td>주요상품지수_CRB지수(Futures)_Pt</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.01.001.0061</td>
+                            <td>공급지표</td>
+                            <td>Lf(금융기관 유동성) 증감률</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.07.001.007.006</td>
+                            <td>공급지표</td>
+                            <td>국채금리_미국국채(30년)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>45376</td>
+                            <td>공급지표</td>
+                            <td>벌크선발주잔량_DWT</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>06.01.010.001.0011</td>
+                            <td>공급지표</td>
+                            <td>소비자물가 상승률</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.02.003.017</td>
+                            <td>공급지표</td>
+                            <td>시장금리:CP(91일)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>46218</td>
+                            <td>공급지표</td>
+                            <td>탱커선계약량_DWT</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.02.003.014</td>
+                            <td>공급지표</td>
+                            <td>시장금리:국고5년(국채관리기금채5년)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>30916</td>
+                            <td>공급지표</td>
+                            <td>컨테이너선해체량_,000 TEU</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14970</td>
+                            <td>운임지표</td>
+                            <td>BDI지수_Index</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.03.006.001.002</td>
+                            <td>경제지표</td>
+                            <td>평균환율_일본(100엔)_(100)통화대원</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>58618</td>
+                            <td>수요지표</td>
+                            <td>미국곡물_M tonnes</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>45390</td>
+                            <td>공급지표</td>
+                            <td>탱커선발주잔량_DWT</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>20651</td>
+                            <td>공급지표</td>
+                            <td>신조선가지수_Index</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14.07.001.002.001</td>
+                            <td>공급지표</td>
+                            <td>국채금리_독일국채(10년)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>16.US.05.001.006</td>
+                            <td>공급지표</td>
+                            <td>Inventories Index(재고지수)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.03.006.001.026</td>
+                            <td>경제지표</td>
+                            <td>평균환율_중국(위안)_통화대원</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.02.003.003</td>
+                            <td>공급지표</td>
+                            <td>시장금리:콜(1일물)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.02.003.005</td>
+                            <td>공급지표</td>
+                            <td>시장금리:CD유통수익률(91)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.02.003.008</td>
+                            <td>공급지표</td>
+                            <td>시장금리:국고3년(국채관리기금채3년)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>30234</td>
+                            <td>공급지표</td>
+                            <td>벌크선해체량_Million DWT</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>30236</td>
+                            <td>공급지표</td>
+                            <td>벌크선인도량_DWT</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>40482</td>
+                            <td>수요지표</td>
+                            <td>중국철광석_Million Tonnes</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.06.001.001</td>
+                            <td>경제지표</td>
+                            <td>경상수지_백만달러 </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.06.001.002</td>
+                            <td>경제지표</td>
+                            <td>상품수지_백만달러 </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>533979</td>
+                            <td>수요지표</td>
+                            <td>인도석탄_,000 tonnes</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.18.001.004</td>
+                            <td>공급지표</td>
+                            <td>회사채 순발행</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>46206</td>
+                            <td>공급지표</td>
+                            <td>컨테이너선계약량_TEU</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>533973</td>
+                            <td>수요지표</td>
+                            <td>호주연료탄_$/Tonne</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11.16.002.011</td>
+                            <td>공급지표</td>
+                            <td>종합주가지수 KOSPI(연월중평균)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>43515</td>
+                            <td>운임지표</td>
+                            <td>BDTI지수_Index</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>04.19.003.008</td>
+                            <td>공급지표</td>
+                            <td>코스피지수(전월비)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>05.02.003.013</td>
+                            <td>공급지표</td>
+                            <td>취업자 증가율</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>16.US.04.011.002</td>
+                            <td>공급지표</td>
+                            <td>New home price(신규주택가격)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>16.US.04.011.001</td>
+                            <td>공급지표</td>
+                            <td>New home sales(신규주택판매)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>04.19.011</td>
+                            <td>공급지표</td>
+                            <td>동행지수 순환변동치</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.01.009.005</td>
+                            <td>경제지표</td>
+                            <td>무역수지_억달러</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.01.009.004</td>
+                            <td>공급지표</td>
+                            <td>수입총액(통관기준) 증감률</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13.01.009.002</td>
+                            <td>공급지표</td>
+                            <td>수출총액(통관기준) 증감률</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    
+
+</div>
+            
+
+        </div>        
+        <div style="text-align:center; margin-bottom:30px;"><small>해운시장 조기경보시스템</small><br />2015.10.07</div>
+    </div>            
+</body>
+
+<script>
+    $(function () {
+        $('#chart').highcharts({
+            title:{
+                text: ''
+            },
+            credits:{
+                enabled:false
+            },
+            exporting: { enabled: false },
+            chart: {
+                type: 'line'
+            },
+            xAxis: {
+                categories: ["200402", "200403", "200404", "200405", "200406", "200407", "200408", "200409", "200410", "200411", "200412", "200501", "200502", "200503", "200504", "200505", "200506", "200507", "200508", "200509", "200510", "200511", "200512", "200601", "200602", "200603", "200604", "200605", "200606", "200607", "200608", "200609", "200610", "200611", "200612", "200701", "200702", "200703", "200704", "200705", "200706", "200707", "200708", "200709", "200710", "200711", "200712", "200801", "200802", "200803", "200804", "200805", "200806", "200807", "200808", "200809", "200810", "200811", "200812", "200901", "200902", "200903", "200904", "200905", "200906", "200907", "200908", "200909", "200910", "200911", "200912", "201001", "201002", "201003", "201004", "201005", "201006", "201007", "201008", "201009", "201010", "201011", "201012", "201101", "201102", "201103", "201104", "201105", "201106", "201107", "201108", "201109", "201110", "201111", "201112", "201201", "201202", "201203", "201204", "201205", "201206", "201207", "201208", "201209", "201210", "201211", "201212", "201301", "201302", "201303", "201304", "201305", "201306", "201307", "201308", "201309", "201310", "201311", "201312", "201401", "201402", "201403", "201404", "201405", "201406", "201407", "201408", "201409", "201410", "201411", "201412", "201501", "201502", "201503", "201504", "201505", "201506", "201507", "201508", "201509", "201510", "201511", "201512"]
+            },
+            yAxis:[
+				    {title: {
+					    text: '종합경보지수'
+				    },
+				    offset: 0,
+				    min:0,
+				    max:0.8,
+				    }
+  				    ,{
+  					    title: {
+  					        text: '종속변수'
+  					    },
+  					    offset: 0,
+  					    opposite: true
+  				    }],
+            plotOptions: {
+                line: {
+                    
+                }
+            },
+            series: [{
+                name: '종합경보지수',
+                data: [0.2986, 0.1252, 0.1252, 0.1655, 0.1241, 0.2046, 0.3318, 0.2916, 0.1918, 0.2332, 0.2332, 0.2332, 0.2332, 0.1835, 0.0851, 0.1463, 0.1463, 0.1865, 0.1865, 0.2945, 0.2945, 0.1865, 0.1451, 0.1451, 0.1853, 0.1241, 0.1241, 0.1241, 0.1241, 0.1241, 0.0804, 0.1416, 0.2496, 0.2496, 0.265, 0.265, 0.1774, 0.1774, 0.1218, 0.1617, 0.1617, 0.2697, 0.2294, 0.2294, 0.2294, 0.1845, 0.1845, 0.2862, 0.2862, 0.3952, 0.4355, 0.376, 0.5239, 0.585, 0.6374, 0.6374, 0.5762, 0.2982, 0.3164, 0.3164, 0.4002, 0.4999, 0.4999, 0.2833, 0.371, 0.3296, 0.3296, 0.2282, 0.1845, 0.1845, 0.2401, 0.2815, 0.2232, 0.344, 0.2883, 0.2883, 0.2078, 0.2078, 0.2078, 0.3349, 0.3349, 0.3349, 0.2947, 0.2947, 0.24, 0.24, 0.24, 0.1711, 0.211, 0.211, 0.4277, 0.4889, 0.5885, 0.8462, 0.9018, 0.6851, 0.6851, 0.6163, 0.7561, 0.6966, 0.7549, 0.7146, 0.6755, 0.595, 0.2523, 0.2523, 0.308, 0.308, 0.2497, 0.3013, 0.3415, 0.261, 0.2054, 0.2742, 0.234, 0.234, 0.234, 0.0815, 0.206, 0.206, 0.206, 0.1373, 0.1621, 0.2058, 0.1645, 0.1242, 0.421, 0.4186, 0.3787, 0.4382, 0.4382, 0.4382, 0.4383, 0.2216, 0.1848, 0.1253, 0.084, 0.1241, 0.145, 0.2045, 0.4626, 0.4189, 0.4189],
+                lineWidth: 3,
+                allowPointSelect: true,
+                zones: [{
+                    value: 0.4,
+                    color: 'rgb(124, 181, 236)'
+                }, {
+                    value: 0.5,
+                    color: '#FF6600'
+                }, {                    
+                    color: '#CC0000'
+                }],marker : {
+                    enabled : true,
+                    radius : 3
+                },dataLabels: {
+                    enabled: true,
+                    color: 'red'
+                }
+            }, {
+                name: '종속변수',
+                data: [5.375, 5.4188, 5.486, 5.3412, 4.3639, 3.2599, 2.8068, 2.7219, 2.5161, 2.3748, 2.7615, 2.575, 2.3083, 2.0674, 1.7058, 2.1002, 1.4901, 1.3275, 1.7211, 1.0507, 1.2899, 1.2385, 1.3548, 1.7813, 1.7176, 2.1404, 2.496, 3.3999, 3.6899, 3.4855, 3.2863, 3.7233, 3.4357, 2.5618, 3.4953, 2.828, 3.0809, 2.8258, 1.403, 1.2995, 1.4424, 0.7717, 1.1456, 1.5141, 1.6201, 1.8073, 1.9814, 3.0696, 2.0598, 1.8534, 1.6, 1.845, 2.8944, 3.2314, 3.4429, 3.91, 7.9229, 9.0109, 8.7615, 7.7668, 8.2173, 7.2733, 6.3637, 4.792, 5.6002, 3.3695, 3.3905, 4.6778, 4.702, 4.8597, 6.9919, 6.928, 6.9605, 5.483, 5.4628, 6.7775, 6.569, 5.7828, 5.9885, 5.6038, 4.3775, 5.1515, 4.6909, 4.9103, 5.9456, 4.3892, 4.4696, 4.3235, 4.6567, 4.5625, 4.9147, 5.234, 5.7907, 5.7111, 5.0656, 5.5728, 4.2584, 4.6936, 5.3431, 7.3489, 8.4752, 8.688, 8.0915, 6.4411, 6.3738, 7.4677, 6.7745, 5.5267, 5.9698, 6.6639, 6.3027, 5.8052, 6.25, 5.5189, 5.9619, 5.85, 6.5792, 6.7498, 6.4348, 6.1562, 6.3746, 6.6245, 6.4066, 6.5495, 6.4202, 5.5255, 6.1384, 5.185, 5.2075, 5.165, 4.5089, 4.6665, 4.8007, 4.4015, 4.4974, 4.3852, 4.5386, 4.2505, 2.7534, 3.871, 3.6138, 5.2304, 6.9027],
+                yAxis : 1,
+                zones: [{
+                    value: 7,
+                    color: 'black'
+                },{                    
+                    color: '#CC0000'                    
+                }],
+                dashStyle: 'longdash',
+                dataLabels: {
+                enabled: true,
+                color: 'black'
+                    }
+            }]
+        });
+    });
+
+    $(function () {
+        console.log('#info')
+        data_table = $('#info').dataTable(
+            {
+                "dom": '<>tp<"datatable_filter"f>',
+                "order": [[1, "desc"]],
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bInfo": false,
+                "bAutoWidth": false
+            });
+        $('table').show()
+    });
+</script>
+
+</html>

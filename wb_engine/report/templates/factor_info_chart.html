@@ -1,0 +1,167 @@
+﻿{% extends "template.html" %}
+
+{% block head %}
+
+<style>
+    @media screen and (max-width: 640px) {
+        table {
+            overflow-x: auto;
+            display: block;
+        }
+    }
+
+    table tbody tr td {
+        font-size: small;
+        min-width: 55px;
+    }
+
+    table tbody tr th {
+        font-size: small;
+        text-align: center;
+    }
+
+    table thead tr th {
+        font-size: small;
+        text-align: center;
+    }
+</style>
+
+{% endblock %}
+
+{% block title %}
+해운시장 조기경보시스템 구축사업 중간보고 | 팩터 정보(차트)
+{% endblock %}
+
+{% block title2 %}
+해운시장 조기경보시스템 구축사업 중간보고 | 팩터 정보(차트)
+{% endblock %}
+
+
+{% block contents %}
+<div class="contents">
+    <!-- polar chart area-->
+    {% for k, v in factor_info.iteritems() %}
+    <div class ="row">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i>{{v.code}}
+                </div>
+                <div class="panel-body">
+                    <div id="chart_{{v.code}}">                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> {{v.code}} - 정보
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>임계치</th>
+                            <td>{{v.thres|round(4)}}</td>
+                            <th>A</th>
+                            <td>{{v.a}}</td>
+                        </tr>
+                        <tr>
+                            <th>방향성</th>
+                            <td>{{v.dir}}</td>
+                            <th>B</th>
+                            <td>{{v.b}}</td>
+                        </tr>
+                        <tr>
+                            <th>NTS</th>
+                            <td>{{v.nts|round(2)}}</td>
+                            <th>C</th>
+                            <td>{{v.c}}</td>
+                        </tr>
+                        <tr>
+                            <th>ADF</th>
+                            <td>{{v.adf_test}}</td>
+                            <th>D</th>
+                            <td>{{v.d}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(function () {
+        console.log('test')
+        data_table = $('#table_ts').dataTable(
+            {
+                "dom": '<>tp<"datatable_filter"f>',
+                "order": [[0, "desc"]],
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bInfo": false,
+                "bAutoWidth": false
+            });
+        $('table').show()
+    });
+
+    $(function () {
+
+        {% for k, v in factor_info.iteritems() %}
+
+            $('#chart_{{v.code}}').highcharts({
+                title:{
+                    text: ''
+                },
+                credits:{
+                    enabled:false
+                },
+                exporting: { enabled: false },
+                chart: {
+                    type: 'line'                
+                },                      
+                xAxis: {
+                    categories: {{v.date}}
+                },
+                yAxis:[
+				        {title: {
+				            text: '{{v.code}}'
+				        },  					    
+					        offset: 0
+				        }
+  				        ,{
+  					        title: {
+  					            text: '종속변수'
+  					        },  					    
+  					        offset: 0,  					    
+  					        opposite: true
+  				        }],
+                plotOptions: {
+                    line: {
+                        dataLabels: {
+                            enabled: false
+                        },
+                        enableMouseTracking: true
+                    }
+                },
+                series: [{
+                    name: '{{v.code}}',
+                    data: {{v.iv_ts}}
+                }, {
+                    name: '종속변수',
+                    data: {{v.dv_ts}},
+                    yAxis : 1
+                }]
+            });
+
+        {% endfor %}
+
+    });
+    
+</script>
+{% endblock %}

@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset='utf-8'>    
+    <title>{% block title %} {% endblock %}</title>
+
+    <!-- jQuery -->
+    <script src="../js/jquery-1.10.2.js"></script>
+
+    <link href='http://fonts.googleapis.com/css?family=Droid+Serif|Open+Sans' rel='stylesheet' type='text/css'>
+
+    <!-- JQuery UI -->
+    <script src="../js/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+
+    <!-- bootstrap -->
+    <script src="../js/jquery-ui.min.js"></script>
+    <script src="../js/bootstrap.js"></script>
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- 공통 css -->
+    <link href="../css/common.css" rel="stylesheet">
+
+    <!-- Sb-admin -->
+    <script src="../js/sb-admin.js"></script>
+    <link href="../css/sb-admin.css" rel="stylesheet">    
+
+    <!-- High stock -->
+    <script src="http://code.highcharts.com/stock/highstock.js"></script>
+    <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+
+    <!-- Font Awesome -->
+    <link href="../fonts/font-awesome/css/font-awesome.css" rel="stylesheet">
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="../fonts/NanumPenScript/stylesheet.css">
+    <link href='http://fonts.googleapis.com/css?family=Changa+One|Hammersmith+One|Orbitron' rel='stylesheet' type='text/css'>    
+
+    <!--  데이터테이블 -->
+    <script type="text/javascript" language="javascript" src="../content/datatable/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" language="javascript" src="../content/datatable/dataTables.bootstrap.js"></script>
+    <link rel="stylesheet" type="text/css" href="../content/datatable/dataTables.bootstrap.css">
+
+    <!-- Headroom -->
+    <script type="text/javascript" language="javascript" src="../content/headroom/headroom.min.js"></script>
+    <script type="text/javascript" language="javascript" src="../content/headroom/jQuery.headroom.js"></script>
+
+    <!-- Responsive Table -->
+    <script type="text/javascript" language="javascript" src="../content/responsive-tables/responsive-tables.js"></script>
+    <link rel="stylesheet" type="text/css" href="../content/responsive-tables/responsive-tables.css">
+
+    <script>
+        if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+            var msViewportStyle = document.createElement("style")
+            msViewportStyle.appendChild(
+              document.createTextNode(
+                "@-ms-viewport{width:auto!important}")
+            )
+            document.getElementsByTagName("head")[0].appendChild(msViewportStyle)
+        }
+    </script>
+
+    <script>
+        $(function () {
+            console.log($('#bottom_nav'));
+            $('#bottom_nav').headroom({ offset: 10 });    
+        });
+    </script>
+
+    <style>
+        .contents{
+            margin-top:40px;
+        }
+
+        .number{
+            text-align:right;
+        }
+    </style>
+
+    {% block head %}
+    {% endblock %}   
+
+</head>
+<body>
+    <div id="wrap" style="background-color:white">
+        <div class="container">
+            <div class="menu">
+                <nav id="top_bar" class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0;">
+                    <div class="container">
+                        <div class="navbar-header" style="width:100%">
+                            <a class="navbar-brand" href="../index.html" style="color: black;"><strong>{% block title2 %} {% endblock %}</strong></a>
+                            <ul class="nav navbar-top-links navbar-right pull-right">
+
+                            <!--
+                                <li class="dropdown">                                    
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" onclick="$('#menu_folder').toggleClass('fa-folder'); $('#menu_folder').toggleClass('fa-folder-open');">
+                                        <i id="menu_folder" class="fa fa-folder fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-messages">                                        
+                                        <li><a href="/stat"><i class="fa fa-fw"></i> 위기경보</a>
+                                        <li><a href="/snc"><i class="fa fa-fw"></i> 독립변수</a>
+                                        <li><a href="/search"><i class="fa fa-fw"></i> 팩터</a>                                        
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-tasks">
+                                        <li role="presentation" class="dropdown-header">Contacts</li>
+                                        <li>                            
+                                            <a href="#" onclick="$('#modal_whoami').modal();"><i class="fa fa-user fa-fw"></i> Copyright</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                -->
+                                <!-- /.dropdown -->
+                            </ul><!-- /.navbar-top-links -->
+                        </div><!-- /.navbar-header -->
+                    </div>
+                </nav><!-- /.navbar-static-top -->
+            </div>
+            {% block contents %}
+            {% endblock %}
+        </div>        
+    </div>            
+</body>
+{% block scripts %}
+{% endblock %}
+</html>

@@ -1,0 +1,99 @@
+/* fonts */
+
+
+div.jqcloud {
+  font-family: 'NanumPen',sans-serif;
+  line-height: normal;
+}
+
+div.jqcloud a {
+  font-size: inherit;
+  text-decoration: none;
+}
+
+
+div.jqcloud span.w10 { font-size: 300%; }
+div.jqcloud span.w9 { font-size: 200%; }
+div.jqcloud span.w8 { font-size: 150%; }
+div.jqcloud span.w7 { font-size: 120%; }
+div.jqcloud span.w6 { font-size: 90%; }
+div.jqcloud span.w5 { font-size: 80%; }
+div.jqcloud span.w4 { font-size: 70%; }
+div.jqcloud span.w3 { font-size: 60%; }
+div.jqcloud span.w2 { font-size: 50%; }
+div.jqcloud span.w1 { font-size: 40%; }
+
+/*
+div.jqcloud span.w10 { font-size: 200%; }
+div.jqcloud span.w9 { font-size: 140%; }
+div.jqcloud span.w8 { font-size: 130%; }
+div.jqcloud span.w7 { font-size: 120%; }
+div.jqcloud span.w6 { font-size: 110%; }
+div.jqcloud span.w5 { font-size: 100%; }
+div.jqcloud span.w4 { font-size: 90%; }
+div.jqcloud span.w3 { font-size: 80%; }
+div.jqcloud span.w2 { font-size: 70%; }
+div.jqcloud span.w1 { font-size: 60%; }
+*/
+
+/* colors */
+div.jqcloud { color: #09f; }
+div.jqcloud a { color: inherit; }
+div.jqcloud a:hover { color: #0df; }
+div.jqcloud a:hover { color: #0cf; }
+
+
+div.jqcloud span.q0 { color: #777794; }
+
+div.jqcloud span.q1 { color: #0066FF; }
+div.jqcloud span.q2 { color: #4587EB; }
+div.jqcloud span.q3 { color: #90a0dd; }
+div.jqcloud span.q4 { color: #A2C3F5; }
+div.jqcloud span.q5 { color: #D0E1FA; }
+div.jqcloud span.q6 { color: #F0B2B2; }
+div.jqcloud span.q7 { color: #E68080; }
+
+
+
+
+
+
+
+div.jqcloud span.q8 { color: #E06666; }
+div.jqcloud span.q9 { color: #D63333; }
+div.jqcloud span.q10 { color: #CC0000; }
+
+
+
+/*
+div.jqcloud span.w10 { color: #0cf; }
+div.jqcloud span.w9 { color: #0cf; }
+div.jqcloud span.w8 { color: #0cf; }
+div.jqcloud span.w7 { color: #39d; }
+div.jqcloud span.w6 { color: #90c5f0; }
+div.jqcloud span.w5 { color: #90a0dd; }
+div.jqcloud span.w4 { color: #90c5f0; }
+div.jqcloud span.w3 { color: #a0ddff; }
+div.jqcloud span.w2 { color: #99ccee; }
+div.jqcloud span.w1 { color: #aab5f0; }
+
+div.jqcloud span.q10 { color: 	#FF0000; }
+div.jqcloud span.q9 { color: 	#FF0000; }
+div.jqcloud span.q8 { color: 	#FF0000; }
+div.jqcloud span.q7 { color: 	#FF0000; }
+div.jqcloud span.q6 { color: 	#FF0000; }
+div.jqcloud span.q5 { color: 	#FF0000; }
+div.jqcloud span.q4 { color: 	#FF0000; }
+div.jqcloud span.q3 { color: 	#FF0000; }
+div.jqcloud span.q2 { color: 	#FF0000; }
+div.jqcloud span.q1 { color: 	#FF0000; }
+*/
+
+/* layout */
+
+div.jqcloud {
+  overflow: hidden;
+  position: relative;
+}
+
+div.jqcloud span { padding: 0; }

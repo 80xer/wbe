@@ -1,0 +1,230 @@
+﻿{% extends "template.html" %}
+
+{% block head %}
+
+<style>
+    @media screen and (max-width: 640px) {
+        table {
+            overflow-x: auto;
+            display: block;
+        }
+    }
+
+    table tbody tr td {
+        font-size: small;
+        min-width: 55px;
+    }
+
+    table thead tr td {
+        font-size: small;
+        text-align: center;
+    }
+
+    .btn{
+        text-align:left;
+        padding-left:10px;
+    }
+
+</style>
+
+{% endblock %}
+
+{% block title %}
+해운시장 조기경보시스템 시뮬레이션 보고서
+{% endblock %}
+
+{% block title2 %}
+해운시장 조기경보시스템  시뮬레이션 보고서
+{% endblock %}
+
+{% block contents %}
+<div class="contents">
+    
+    <!--
+    <div style="text-align:center;">
+        <img class="img-circle" src="img/intro.jpg" width="70%" />
+    </div>
+    -->
+
+    <div id="chart" style="margin-top:60px;">        
+    </div>
+
+    <hr/>
+
+    <!-- polar chart area-->
+    <div class="col-md-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">개별레포트</div>
+            <div class="panel-body">
+                <a class="btn btn-default btn-block" href="report_iv_info.html" target=""> 독립변수별 정보</a>
+                <!--<a class="btn btn-default btn-block" href="report_iv_info_chart.html" target="_blank"> 독립변수별 정보(차트)</a>-->
+                <a class="btn btn-default btn-block" href="report_factor_info.html" target=""> 팩터별 정보</a>
+                <!--<a class="btn btn-default btn-block" href="report_factor_info_chart.html" target="_blank"> 팩터별 정보(차트)</a>-->
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">옵션</div>
+            <div class="panel-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>옵션</th>
+                            <th>값</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>T0</td>
+                            <td>{{params.t0}}</td>
+                        </tr>
+                        <tr>
+                            <td>T1</td>
+                            <td>{{params.t1}}</td>
+                        </tr>
+                        <tr>
+                            <td>HP filter 계수</td>
+                            <td>{{params.hp_filter}}</td>
+                        </tr>
+                        <tr>
+                            <td>NTS </td>
+                            <td>{{params.nts_thres}}</td>
+                        </tr>
+                        <tr>
+                            <td>PCA 변동성커버</td>
+                            <td>{{params.pca_thres*100}}%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-12">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">투입 독립변수(총 {{iv_code|length}}개 독립변수 투입)</div>
+            <div class="panel-body">
+                <table id="info" class="table table-bordered table-stripted">
+                    <thead>
+                        <tr>
+                            <th>코드</th>
+                            <th>그룹</th>
+                            <th>이름</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for k, v in iv_code.iteritems() %}
+                        <tr>
+                            <td>{{k}}</td>
+                            <td>{{iv_info[k]['group']}}</td>
+                            <td>{{v}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    
+
+</div>
+            
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(function () {
+        $('#chart').highcharts({
+            title:{
+                text: ''
+            },
+            credits:{
+                enabled:false
+            },
+            exporting: { enabled: false },
+            chart: {
+                type: 'line'
+            },
+            xAxis: {
+                categories: {{chart_yyyymm}}
+            },
+            yAxis:[
+				    {title: {
+					    text: '종합경보지수'
+				    },
+				    offset: 0,
+				    min:0,
+				    max:0.8,
+				    }
+  				    ,{
+  					    title: {
+  					        text: '종속변수'
+  					    },
+  					    offset: 0,
+  					    opposite: true
+  				    }],
+            plotOptions: {
+                line: {
+                    
+                }
+            },
+            series: [{
+                name: '종합경보지수',
+                data: {{chart_idx}},
+                lineWidth: 3,
+                allowPointSelect: true,
+                zones: [{
+                    value: 0.4,
+                    color: 'rgb(124, 181, 236)'
+                }, {
+                    value: 0.5,
+                    color: '#FF6600'
+                }, {                    
+                    color: '#CC0000'
+                }],marker : {
+                    enabled : true,
+                    radius : 3
+                },dataLabels: {
+                    enabled: true,
+                    color: 'red'
+                }
+            }, {
+                name: '종속변수',
+                data: {{chart_dv}},
+                yAxis : 1,
+                zones: [{
+                    value: 7,
+                    color: 'black'
+                },{                    
+                    color: '#CC0000'                    
+                }],
+                dashStyle: 'longdash',
+                dataLabels: {
+                enabled: true,
+                color: 'black'
+                    }
+            }]
+        });
+    });
+
+    $(function () {
+        console.log('#info')
+        data_table = $('#info').dataTable(
+            {
+                "dom": '<>tp<"datatable_filter"f>',
+                "order": [[1, "desc"]],
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bInfo": false,
+                "bAutoWidth": false
+            });
+        $('table').show()
+    });
+</script>
+{% endblock %}

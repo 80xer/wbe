@@ -1,0 +1,1188 @@
+﻿﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset='utf-8'>    
+    <title>
+해양위기지수 베타테스트 | 독립변수 시계열
+</title>
+
+    <!-- jQuery -->
+    <script src="../js/jquery-1.10.2.js"></script>
+
+    <link href='http://fonts.googleapis.com/css?family=Droid+Serif|Open+Sans' rel='stylesheet' type='text/css'>
+
+    <!-- JQuery UI -->
+    <script src="../js/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+
+    <!-- bootstrap -->
+    <script src="../js/jquery-ui.min.js"></script>
+    <script src="../js/bootstrap.js"></script>
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- 공통 css -->
+    <link href="../css/common.css" rel="stylesheet">
+
+    <!-- Sb-admin -->
+    <script src="../js/sb-admin.js"></script>
+    <link href="../css/sb-admin.css" rel="stylesheet">    
+
+    <!-- High stock -->
+    <script src="http://code.highcharts.com/stock/highstock.js"></script>
+    <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+
+    <!-- Font Awesome -->
+    <link href="../fonts/font-awesome/css/font-awesome.css" rel="stylesheet">
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="../fonts/NanumPenScript/stylesheet.css">
+    <link href='http://fonts.googleapis.com/css?family=Changa+One|Hammersmith+One|Orbitron' rel='stylesheet' type='text/css'>    
+
+    <!--  데이터테이블 -->
+    <script type="text/javascript" language="javascript" src="../content/datatable/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" language="javascript" src="../content/datatable/dataTables.bootstrap.js"></script>
+    <link rel="stylesheet" type="text/css" href="../content/datatable/dataTables.bootstrap.css">
+
+    <!-- Headroom -->
+    <script type="text/javascript" language="javascript" src="../content/headroom/headroom.min.js"></script>
+    <script type="text/javascript" language="javascript" src="../content/headroom/jQuery.headroom.js"></script>
+
+    <!-- Responsive Table -->
+    <script type="text/javascript" language="javascript" src="../content/responsive-tables/responsive-tables.js"></script>
+    <link rel="stylesheet" type="text/css" href="../content/responsive-tables/responsive-tables.css">
+
+    <script>
+        if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+            var msViewportStyle = document.createElement("style")
+            msViewportStyle.appendChild(
+              document.createTextNode(
+                "@-ms-viewport{width:auto!important}")
+            )
+            document.getElementsByTagName("head")[0].appendChild(msViewportStyle)
+        }
+    </script>
+
+    <script>
+        $(function () {
+            console.log($('#bottom_nav'));
+            $('#bottom_nav').headroom({ offset: 10 });    
+        });
+    </script>
+
+    <style>
+        .contents{
+            margin-top:40px;
+        }
+
+        .number{
+            text-align:right;
+        }
+    </style>
+
+    
+
+<style>
+    @media screen and (max-width: 640px) {
+        table {
+            overflow-x: auto;
+            display: block;
+        }
+    }
+
+    table tbody tr td {
+        font-size: small;
+        min-width: 55px;
+    }
+
+    table tbody tr th {
+        font-weight:bold;
+    }
+
+    table thead tr th {
+        font-size: small;
+        text-align: center;
+    }
+</style>
+
+   
+
+</head>
+<body>
+    <div id="wrap" style="background-color:white">
+        <div class="container">
+            <div class="menu">
+                <nav id="top_bar" class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0;">
+                    <div class="container">
+                        <div class="navbar-header" style="width:100%">
+                            <a class="navbar-brand" href="../index.html" style="color: black;"><strong>
+해양위기지수 베타테스트 | 독립변수 시계열
+</strong></a>
+                            <ul class="nav navbar-top-links navbar-right pull-right">
+                                <li class="dropdown">
+                                    <!-- 서비스 메뉴 -->
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" onclick="$('#menu_folder').toggleClass('fa-folder'); $('#menu_folder').toggleClass('fa-folder-open');">
+                                        <i id="menu_folder" class="fa fa-folder fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-messages">                                        
+                                        <li><a href="/stat"><i class="fa fa-fw"></i> 위기경보</a>
+                                        <li><a href="/snc"><i class="fa fa-fw"></i> 독립변수</a>
+                                        <li><a href="/search"><i class="fa fa-fw"></i> 팩터</a>                                        
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-tasks">
+                                        <li role="presentation" class="dropdown-header">Contacts</li>
+                                        <li>
+                                            <!--<a href="/resume/whoami"><i class="fa fa-user fa-fw"></i> 개발자</a>-->
+                                            <a href="#" onclick="$('#modal_whoami').modal();"><i class="fa fa-user fa-fw"></i> Copyright</a>
+                                        </li>
+                                    </ul>
+
+                                </li><!-- /.dropdown -->
+                            </ul><!-- /.navbar-top-links -->
+                        </div><!-- /.navbar-header -->
+                    </div>
+                </nav><!-- /.navbar-static-top -->
+            </div>
+            
+<div class="contents">
+    <!-- polar chart area-->
+    <div class ="col-md-8">
+        <div class="row">            
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Ro-Ro (7,500-9,999 dwt) Orderbook 차트
+                </div>
+                <div id="chart" class="panel-body">
+                </div>
+            </div>            
+        </div>        
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Ro-Ro (7,500-9,999 dwt) Orderbook 정보
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>임계치</th>
+                            <td>22.0186968295</td>
+                            <th>A</th>
+                            <td>25</td>
+                        </tr>                        
+                        <tr>
+                            <th>방향성</th>
+                            <td>down</td>
+                            <th>B</th>
+                            <td>51</td>
+                        </tr>
+                        <tr>
+                            <th>NTS</th>
+                            <td>0.557948717949</td>
+                            <th>C</th>
+                            <td>7</td>
+                        </tr>
+                        <tr>
+                            <th>ADF</th>
+                            <td>False</td>
+                            <th>D</th>
+                            <td>66</td>
+                        </tr>  
+                    </table>
+                </div>
+            </div>
+        </div>        
+    </div>
+    <div class="col-md-4">
+        
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-bar-chart-o fa-fw"></i> 시계열
+            </div>
+            <div class="panel-body">
+                <table id="table_ts" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>YYYYMM</th>
+                            <th>45053</th>
+                            <th>종속변수</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td>200202</td>
+                            <td class="number">-5860.64</td>
+                            <td class="number">610.2</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200203</td>
+                            <td class="number">-5739.32</td>
+                            <td class="number">463.44</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200204</td>
+                            <td class="number">-5511.62</td>
+                            <td class="number">508.33</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200205</td>
+                            <td class="number">-5013.77</td>
+                            <td class="number">602.67</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200206</td>
+                            <td class="number">-4321.71</td>
+                            <td class="number">519.33</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200207</td>
+                            <td class="number">-3461.26</td>
+                            <td class="number">558.05</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200208</td>
+                            <td class="number">-2414.99</td>
+                            <td class="number">566.84</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200209</td>
+                            <td class="number">-1130.89</td>
+                            <td class="number">513.71</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200210</td>
+                            <td class="number">302.51</td>
+                            <td class="number">642.98</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200211</td>
+                            <td class="number">1807.99</td>
+                            <td class="number">760.76</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200212</td>
+                            <td class="number">3305.3</td>
+                            <td class="number">749.24</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200301</td>
+                            <td class="number">4696.12</td>
+                            <td class="number">752.78</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200302</td>
+                            <td class="number">5849.05</td>
+                            <td class="number">998.89</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200303</td>
+                            <td class="number">6585.76</td>
+                            <td class="number">948.86</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200304</td>
+                            <td class="number">6871.53</td>
+                            <td class="number">1267.75</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200305</td>
+                            <td class="number">6605.77</td>
+                            <td class="number">1551.79</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200306</td>
+                            <td class="number">6033.7</td>
+                            <td class="number">1662.75</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200307</td>
+                            <td class="number">5445.02</td>
+                            <td class="number">1704.89</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200308</td>
+                            <td class="number">5069.11</td>
+                            <td class="number">1642.44</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200309</td>
+                            <td class="number">5080.88</td>
+                            <td class="number">1580.72</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200310</td>
+                            <td class="number">5505.38</td>
+                            <td class="number">1378.7</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200311</td>
+                            <td class="number">6316.84</td>
+                            <td class="number">1360.86</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200312</td>
+                            <td class="number">7434.45</td>
+                            <td class="number">1534.74</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200401</td>
+                            <td class="number">8714.21</td>
+                            <td class="number">1497.28</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200402</td>
+                            <td class="number">9937.81</td>
+                            <td class="number">1842.94</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200403</td>
+                            <td class="number">10799.76</td>
+                            <td class="number">1769.78</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200404</td>
+                            <td class="number">10895.22</td>
+                            <td class="number">2080.39</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200405</td>
+                            <td class="number">10541.85</td>
+                            <td class="number">2373.11</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200406</td>
+                            <td class="number">9948.38</td>
+                            <td class="number">2276.84</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200407</td>
+                            <td class="number">9218.11</td>
+                            <td class="number">2229.33</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200408</td>
+                            <td class="number">8769.35</td>
+                            <td class="number">2814.09</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200409</td>
+                            <td class="number">8684.84</td>
+                            <td class="number">2670.0</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200410</td>
+                            <td class="number">8862.86</td>
+                            <td class="number">2481.44</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200411</td>
+                            <td class="number">9127.68</td>
+                            <td class="number">2451.51</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200412</td>
+                            <td class="number">9214.93</td>
+                            <td class="number">2413.02</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200501</td>
+                            <td class="number">9322.64</td>
+                            <td class="number">2505.71</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200502</td>
+                            <td class="number">9446.13</td>
+                            <td class="number">2188.91</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200503</td>
+                            <td class="number">9487.51</td>
+                            <td class="number">2461.78</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200504</td>
+                            <td class="number">9364.97</td>
+                            <td class="number">2153.51</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200505</td>
+                            <td class="number">8901.82</td>
+                            <td class="number">2156.22</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200506</td>
+                            <td class="number">8196.35</td>
+                            <td class="number">2194.27</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200507</td>
+                            <td class="number">7257.81</td>
+                            <td class="number">2200.29</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200508</td>
+                            <td class="number">6220.76</td>
+                            <td class="number">2215.19</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200509</td>
+                            <td class="number">4939.89</td>
+                            <td class="number">2138.76</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200510</td>
+                            <td class="number">3327.08</td>
+                            <td class="number">2602.16</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200511</td>
+                            <td class="number">1637.87</td>
+                            <td class="number">2546.36</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200512</td>
+                            <td class="number">94.55</td>
+                            <td class="number">2440.76</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200601</td>
+                            <td class="number">-1304.22</td>
+                            <td class="number">2088.71</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200602</td>
+                            <td class="number">-2560.75</td>
+                            <td class="number">2414.37</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200603</td>
+                            <td class="number">-3664.27</td>
+                            <td class="number">2526.77</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200604</td>
+                            <td class="number">-4578.44</td>
+                            <td class="number">2531.02</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200605</td>
+                            <td class="number">-5437.5</td>
+                            <td class="number">3039.47</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200606</td>
+                            <td class="number">-6329.91</td>
+                            <td class="number">2863.4</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200607</td>
+                            <td class="number">-7289.78</td>
+                            <td class="number">2651.72</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200608</td>
+                            <td class="number">-8287.89</td>
+                            <td class="number">3020.2</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200609</td>
+                            <td class="number">-9033.21</td>
+                            <td class="number">3422.76</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200610</td>
+                            <td class="number">-9151.84</td>
+                            <td class="number">4303.66</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200611</td>
+                            <td class="number">-8938.01</td>
+                            <td class="number">5723.75</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200612</td>
+                            <td class="number">-8594.43</td>
+                            <td class="number">5053.06</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200701</td>
+                            <td class="number">-8234.43</td>
+                            <td class="number">6872.23</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200702</td>
+                            <td class="number">-7885.42</td>
+                            <td class="number">6961.07</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200703</td>
+                            <td class="number">-7479.14</td>
+                            <td class="number">7310.05</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200704</td>
+                            <td class="number">-6691.79</td>
+                            <td class="number">9467.95</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200705</td>
+                            <td class="number">-5678.48</td>
+                            <td class="number">7809.44</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200706</td>
+                            <td class="number">-4527.38</td>
+                            <td class="number">6893.45</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200707</td>
+                            <td class="number">-3269.88</td>
+                            <td class="number">5248.21</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200708</td>
+                            <td class="number">-1892.11</td>
+                            <td class="number">6138.32</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200709</td>
+                            <td class="number">-624.32</td>
+                            <td class="number">6439.45</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200710</td>
+                            <td class="number">322.15</td>
+                            <td class="number">6769.53</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200711</td>
+                            <td class="number">1197.71</td>
+                            <td class="number">6582.23</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200712</td>
+                            <td class="number">2060.56</td>
+                            <td class="number">6068.06</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200801</td>
+                            <td class="number">2956.9</td>
+                            <td class="number">5939.3</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200802</td>
+                            <td class="number">3912.36</td>
+                            <td class="number">5433.18</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200803</td>
+                            <td class="number">4922.95</td>
+                            <td class="number">5167.4</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200804</td>
+                            <td class="number">5945.6</td>
+                            <td class="number">3467.73</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200805</td>
+                            <td class="number">6888.0</td>
+                            <td class="number">3379.11</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200806</td>
+                            <td class="number">7404.94</td>
+                            <td class="number">3728.96</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200807</td>
+                            <td class="number">7082.35</td>
+                            <td class="number">3508.06</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200808</td>
+                            <td class="number">6178.88</td>
+                            <td class="number">2753.59</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200809</td>
+                            <td class="number">4882.36</td>
+                            <td class="number">3165.35</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200810</td>
+                            <td class="number">3318.81</td>
+                            <td class="number">3421.02</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200811</td>
+                            <td class="number">1565.44</td>
+                            <td class="number">3489.94</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200812</td>
+                            <td class="number">-168.1</td>
+                            <td class="number">3199.97</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200901</td>
+                            <td class="number">-1687.83</td>
+                            <td class="number">3465.96</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200902</td>
+                            <td class="number">-2798.09</td>
+                            <td class="number">3373.22</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200903</td>
+                            <td class="number">-3475.26</td>
+                            <td class="number">3359.39</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200904</td>
+                            <td class="number">-3667.74</td>
+                            <td class="number">3038.63</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200905</td>
+                            <td class="number">-3289.17</td>
+                            <td class="number">3000.27</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200906</td>
+                            <td class="number">-2586.64</td>
+                            <td class="number">3140.41</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200907</td>
+                            <td class="number">-1774.34</td>
+                            <td class="number">3383.48</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200908</td>
+                            <td class="number">-1040.6</td>
+                            <td class="number">3534.15</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200909</td>
+                            <td class="number">-556.0</td>
+                            <td class="number">3976.27</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200910</td>
+                            <td class="number">-358.84</td>
+                            <td class="number">3858.54</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200911</td>
+                            <td class="number">-408.39</td>
+                            <td class="number">3522.27</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>200912</td>
+                            <td class="number">-660.35</td>
+                            <td class="number">4061.69</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201001</td>
+                            <td class="number">-1066.31</td>
+                            <td class="number">3860.56</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201002</td>
+                            <td class="number">-1571.28</td>
+                            <td class="number">3625.16</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201003</td>
+                            <td class="number">-2232.65</td>
+                            <td class="number">4356.6</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201004</td>
+                            <td class="number">-3092.1</td>
+                            <td class="number">3920.86</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201005</td>
+                            <td class="number">-4168.98</td>
+                            <td class="number">4137.95</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201006</td>
+                            <td class="number">-5451.72</td>
+                            <td class="number">4065.95</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201007</td>
+                            <td class="number">-6887.06</td>
+                            <td class="number">3777.59</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201008</td>
+                            <td class="number">-8490.28</td>
+                            <td class="number">3382.67</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201009</td>
+                            <td class="number">-10207.78</td>
+                            <td class="number">3557.72</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201010</td>
+                            <td class="number">-12024.93</td>
+                            <td class="number">3112.54</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201011</td>
+                            <td class="number">-13825.0</td>
+                            <td class="number">2956.1</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201012</td>
+                            <td class="number">-15371.03</td>
+                            <td class="number">2722.49</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201101</td>
+                            <td class="number">-16287.78</td>
+                            <td class="number">2662.9</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201102</td>
+                            <td class="number">-16119.79</td>
+                            <td class="number">2451.71</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201103</td>
+                            <td class="number">-15074.63</td>
+                            <td class="number">2015.77</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201104</td>
+                            <td class="number">-13548.27</td>
+                            <td class="number">2184.54</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201105</td>
+                            <td class="number">-11785.96</td>
+                            <td class="number">1756.61</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201106</td>
+                            <td class="number">-10084.16</td>
+                            <td class="number">1967.97</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201107</td>
+                            <td class="number">-8621.46</td>
+                            <td class="number">2292.38</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201108</td>
+                            <td class="number">-7475.62</td>
+                            <td class="number">2620.41</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201109</td>
+                            <td class="number">-6638.17</td>
+                            <td class="number">2527.08</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201110</td>
+                            <td class="number">-6025.9</td>
+                            <td class="number">2281.29</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201111</td>
+                            <td class="number">-5489.2</td>
+                            <td class="number">1913.47</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201112</td>
+                            <td class="number">-5045.99</td>
+                            <td class="number">1989.44</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201201</td>
+                            <td class="number">-4659.26</td>
+                            <td class="number">1917.16</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201202</td>
+                            <td class="number">-4241.57</td>
+                            <td class="number">1994.51</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201203</td>
+                            <td class="number">-3845.56</td>
+                            <td class="number">1935.7</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201204</td>
+                            <td class="number">-3481.47</td>
+                            <td class="number">1808.28</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201205</td>
+                            <td class="number">-3121.09</td>
+                            <td class="number">1587.83</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201206</td>
+                            <td class="number">-2701.36</td>
+                            <td class="number">1834.18</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201207</td>
+                            <td class="number">-2128.05</td>
+                            <td class="number">1792.68</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201208</td>
+                            <td class="number">-1466.58</td>
+                            <td class="number">1602.77</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201209</td>
+                            <td class="number">-761.11</td>
+                            <td class="number">1438.63</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201210</td>
+                            <td class="number">-41.12</td>
+                            <td class="number">1122.23</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201211</td>
+                            <td class="number">671.51</td>
+                            <td class="number">1154.82</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201212</td>
+                            <td class="number">1355.32</td>
+                            <td class="number">1162.25</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201301</td>
+                            <td class="number">1982.14</td>
+                            <td class="number">1308.45</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201302</td>
+                            <td class="number">2510.23</td>
+                            <td class="number">1434.2</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201303</td>
+                            <td class="number">2878.04</td>
+                            <td class="number">1439.0</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201304</td>
+                            <td class="number">2998.91</td>
+                            <td class="number">1190.11</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201305</td>
+                            <td class="number">2942.46</td>
+                            <td class="number">919.03</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201306</td>
+                            <td class="number">2748.34</td>
+                            <td class="number">1068.74</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201307</td>
+                            <td class="number">2426.74</td>
+                            <td class="number">1112.26</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201308</td>
+                            <td class="number">2066.18</td>
+                            <td class="number">1054.13</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201309</td>
+                            <td class="number">1730.94</td>
+                            <td class="number">955.3</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201310</td>
+                            <td class="number">1464.6</td>
+                            <td class="number">1009.61</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201311</td>
+                            <td class="number">1293.45</td>
+                            <td class="number">965.96</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201312</td>
+                            <td class="number">1229.13</td>
+                            <td class="number">935.86</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201401</td>
+                            <td class="number">1270.35</td>
+                            <td class="number">943.08</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201402</td>
+                            <td class="number">1403.53</td>
+                            <td class="number">1080.29</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201403</td>
+                            <td class="number">1602.37</td>
+                            <td class="number">953.8</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201404</td>
+                            <td class="number">1826.55</td>
+                            <td class="number">1002.05</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201405</td>
+                            <td class="number">2019.73</td>
+                            <td class="number">970.33</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>201406</td>
+                            <td class="number">2107.29</td>
+                            <td class="number">1022.9</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>        
+    </div>            
+</body>
+
+<script>
+    $(function () {
+        console.log('test')
+        data_table = $('#table_ts').dataTable(
+            {
+                "dom": '<>tp<"datatable_filter"f>',
+                "order": [[0, "desc"]],
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bInfo": false,
+                "bAutoWidth": false
+            });
+        $('table').show()
+    });
+
+    $(function () {
+        $('#chart').highcharts({
+            title:{
+                text: ''
+            },
+            credits:{
+                enabled:false
+            },
+            exporting: { enabled: false },
+            chart: {
+                type: 'line'                
+            },                      
+            xAxis: {
+                categories: ["200202", "200203", "200204", "200205", "200206", "200207", "200208", "200209", "200210", "200211", "200212", "200301", "200302", "200303", "200304", "200305", "200306", "200307", "200308", "200309", "200310", "200311", "200312", "200401", "200402", "200403", "200404", "200405", "200406", "200407", "200408", "200409", "200410", "200411", "200412", "200501", "200502", "200503", "200504", "200505", "200506", "200507", "200508", "200509", "200510", "200511", "200512", "200601", "200602", "200603", "200604", "200605", "200606", "200607", "200608", "200609", "200610", "200611", "200612", "200701", "200702", "200703", "200704", "200705", "200706", "200707", "200708", "200709", "200710", "200711", "200712", "200801", "200802", "200803", "200804", "200805", "200806", "200807", "200808", "200809", "200810", "200811", "200812", "200901", "200902", "200903", "200904", "200905", "200906", "200907", "200908", "200909", "200910", "200911", "200912", "201001", "201002", "201003", "201004", "201005", "201006", "201007", "201008", "201009", "201010", "201011", "201012", "201101", "201102", "201103", "201104", "201105", "201106", "201107", "201108", "201109", "201110", "201111", "201112", "201201", "201202", "201203", "201204", "201205", "201206", "201207", "201208", "201209", "201210", "201211", "201212", "201301", "201302", "201303", "201304", "201305", "201306", "201307", "201308", "201309", "201310", "201311", "201312", "201401", "201402", "201403", "201404", "201405", "201406"]
+            },
+            yAxis:[
+				    {title: {
+					    text: 'Ro-Ro (7,500-9,999 dwt) Orderbook'
+				    },  					    
+					    offset: 0
+				    }
+  				    ,{
+  					    title: {
+  					        text: '종속변수'
+  					    },  					    
+  					    offset: 0,  					    
+  					    opposite: true
+  				    }],
+            plotOptions: {
+                line: {
+                    dataLabels: {
+                        enabled: false
+                    },
+                    enableMouseTracking: true
+                }
+            },
+            series: [{
+                name: 'Ro-Ro (7,500-9,999 dwt) Orderbook',
+                data: [-5860.64, -5739.32, -5511.62, -5013.77, -4321.71, -3461.26, -2414.99, -1130.89, 302.51, 1807.99, 3305.3, 4696.12, 5849.05, 6585.76, 6871.53, 6605.77, 6033.7, 5445.02, 5069.11, 5080.88, 5505.38, 6316.84, 7434.45, 8714.21, 9937.81, 10799.76, 10895.22, 10541.85, 9948.38, 9218.11, 8769.35, 8684.84, 8862.86, 9127.68, 9214.93, 9322.64, 9446.13, 9487.51, 9364.97, 8901.82, 8196.35, 7257.81, 6220.76, 4939.89, 3327.08, 1637.87, 94.55, -1304.22, -2560.75, -3664.27, -4578.44, -5437.5, -6329.91, -7289.78, -8287.89, -9033.21, -9151.84, -8938.01, -8594.43, -8234.43, -7885.42, -7479.14, -6691.79, -5678.48, -4527.38, -3269.88, -1892.11, -624.32, 322.15, 1197.71, 2060.56, 2956.9, 3912.36, 4922.95, 5945.6, 6888.0, 7404.94, 7082.35, 6178.88, 4882.36, 3318.81, 1565.44, -168.1, -1687.83, -2798.09, -3475.26, -3667.74, -3289.17, -2586.64, -1774.34, -1040.6, -556.0, -358.84, -408.39, -660.35, -1066.31, -1571.28, -2232.65, -3092.1, -4168.98, -5451.72, -6887.06, -8490.28, -10207.78, -12024.93, -13825.0, -15371.03, -16287.78, -16119.79, -15074.63, -13548.27, -11785.96, -10084.16, -8621.46, -7475.62, -6638.17, -6025.9, -5489.2, -5045.99, -4659.26, -4241.57, -3845.56, -3481.47, -3121.09, -2701.36, -2128.05, -1466.58, -761.11, -41.12, 671.51, 1355.32, 1982.14, 2510.23, 2878.04, 2998.91, 2942.46, 2748.34, 2426.74, 2066.18, 1730.94, 1464.6, 1293.45, 1229.13, 1270.35, 1403.53, 1602.37, 1826.55, 2019.73, 2107.29]
+            }, {
+                name: '종속변수',
+                data: [610.2, 463.44, 508.33, 602.67, 519.33, 558.05, 566.84, 513.71, 642.98, 760.76, 749.24, 752.78, 998.89, 948.86, 1267.75, 1551.79, 1662.75, 1704.89, 1642.44, 1580.72, 1378.7, 1360.86, 1534.74, 1497.28, 1842.94, 1769.78, 2080.39, 2373.11, 2276.84, 2229.33, 2814.09, 2670.0, 2481.44, 2451.51, 2413.02, 2505.71, 2188.91, 2461.78, 2153.51, 2156.22, 2194.27, 2200.29, 2215.19, 2138.76, 2602.16, 2546.36, 2440.76, 2088.71, 2414.37, 2526.77, 2531.02, 3039.47, 2863.4, 2651.72, 3020.2, 3422.76, 4303.66, 5723.75, 5053.06, 6872.23, 6961.07, 7310.05, 9467.95, 7809.44, 6893.45, 5248.21, 6138.32, 6439.45, 6769.53, 6582.23, 6068.06, 5939.3, 5433.18, 5167.4, 3467.73, 3379.11, 3728.96, 3508.06, 2753.59, 3165.35, 3421.02, 3489.94, 3199.97, 3465.96, 3373.22, 3359.39, 3038.63, 3000.27, 3140.41, 3383.48, 3534.15, 3976.27, 3858.54, 3522.27, 4061.69, 3860.56, 3625.16, 4356.6, 3920.86, 4137.95, 4065.95, 3777.59, 3382.67, 3557.72, 3112.54, 2956.1, 2722.49, 2662.9, 2451.71, 2015.77, 2184.54, 1756.61, 1967.97, 2292.38, 2620.41, 2527.08, 2281.29, 1913.47, 1989.44, 1917.16, 1994.51, 1935.7, 1808.28, 1587.83, 1834.18, 1792.68, 1602.77, 1438.63, 1122.23, 1154.82, 1162.25, 1308.45, 1434.2, 1439.0, 1190.11, 919.03, 1068.74, 1112.26, 1054.13, 955.3, 1009.61, 965.96, 935.86, 943.08, 1080.29, 953.8, 1002.05, 970.33, 1022.9],
+                yAxis : 1
+            }]
+        });
+    });
+</script>
+
+</html>
