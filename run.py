@@ -30,8 +30,8 @@ print '*************************************************'
 paramsDefault = {
     'nts_thres': 0.5                        # NTS 필터 값
     ,'t0': datetime.date(2004, 1, 1)         # 데이터 초기 시점
-    ,'t1': datetime.date(2012, 3, 1)         # 데이터 로딩 마지막 시점
-    ,'t2': datetime.date(2015, 3, 1)         # 데이터 러닝 마지막 시점
+    ,'t1': datetime.date(2015, 12, 1)         # 데이터 로딩 마지막 시점
+    ,'t2': datetime.date(2015, 12, 1)         # 데이터 러닝 마지막 시점
     ,'hp_filter': 10                         # HP필터 값
     ,'pca_thres': 0.9                        # PCA 필터 값
     ,'dv_dir': 'up'                          # 종속변수 위기 방향
@@ -54,6 +54,9 @@ if option.default:
     params['lag_cut'] = paramsDefault['lag_cut']
     params['scaling'] = paramsDefault['scaling']
     params['hp_filter'] = paramsDefault['hp_filter']
+    params['dv_dir'] = paramsDefault['dv_dir']
+    params['thres_cut'] = paramsDefault['thres_cut']
+    params['dv_thres'] = paramsDefault['dv_thres']
 else:
     print ''
     print 'Please enter input parameters below'
@@ -79,6 +82,9 @@ else:
     params['lag_cut'] = lag_cut and int(lag_cut) or paramsDefault['lag_cut']
     params['scaling'] = scaling or paramsDefault['scaling']
     params['hp_filter'] = hp_filter or paramsDefault['hp_filter']
+    params['dv_dir'] = paramsDefault['dv_dir']
+    params['thres_cut'] = paramsDefault['thres_cut']
+    params['dv_thres'] = paramsDefault['dv_thres']
 
 # for x in params:
 #     print "%s : %s" %(x, params[x])
