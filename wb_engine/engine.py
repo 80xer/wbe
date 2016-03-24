@@ -21,10 +21,8 @@ class WbEngine():
     def run(self, params):
         
         t0 = params['t0'] # 초기   날짜 세팅
-        t1 = params['t1'] # 마지막 날짜 세팅        
-
-
-
+        t1 = params['t1'] # 마지막 날짜 세팅
+        
         read_module = wb_engine.read.ReadModule(t0, t1) # 읽기 모듈 객체화
         input_path = os.getcwd() + "\\input"            # input file 경로 설정
         
@@ -36,6 +34,7 @@ class WbEngine():
         for path in paths:                              # 개발중이므로 한 파일만 읽는다.
             full_path = iv_path + path
             iv_total.extend(read_module.read_file(full_path))
+
 
         iv_total_new = []
         for iv in iv_total:

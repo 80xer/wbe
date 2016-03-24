@@ -111,7 +111,7 @@ class ReadModule():
         date_values = sh.col_values(date_col, start_rowx=start_row, end_rowx=sh.nrows) # 날짜 값
         date_type = sh.col_types(date_col, start_rowx=start_row, end_rowx=sh.nrows)    # 날짜 타입
 
-        io_values = sh.col_values(date_col-1)
+        # io_values = sh.col_values(date_col-1)
 
         date_result = []
 
