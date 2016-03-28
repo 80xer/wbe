@@ -8,7 +8,7 @@ from wb_engine.preprocessing import PreProcessing
 
 
 # Series[] 를 dataframe으로 변환해 준다.
-def convert_series_list_to_dataframe(series_list):    
+def convert_series_list_to_dataframe(series_list):
     df = pandas.DataFrame()
     df['YYYYMM'] = pandas.Series(series_list[0].intp_x_str)
     df['DATE'] = pandas.Series(series_list[0].intp_x)
@@ -105,7 +105,6 @@ class ReadModule():
 
     # 시트에서 데이터 추출하기
     def extract_from_sheet(self, book, sh, date_col=0, id_row=2, nm_row=3, unit_row=4, start_col=1, start_row=5):
-        
         series_result = []
 
         date_values = sh.col_values(date_col, start_rowx=start_row, end_rowx=sh.nrows) # 날짜 값
@@ -114,8 +113,8 @@ class ReadModule():
         # io_values = sh.col_values(date_col-1)
 
         date_result = []
-
         for i in range(len(date_values)):
+
             if date_type[i] == 3: # 날짜 형식
                 date_tuple = xlrd.xldate_as_tuple(date_values[i], book.datemode)
                 date_result.append(datetime.date(date_tuple[0], date_tuple[1], date_tuple[2]))
@@ -123,15 +122,15 @@ class ReadModule():
                 date_str = str(int(date_values[i]))
                 date_result.append(datetime.datetime.strptime(date_str, '%Y%m%d').date())
                 pass              # 문자열일 경우 처리해 줘야 할듯
-    
+
         col_cnt = sh.row_len(id_row)
+
         for i in range(col_cnt)[start_col:]:
         #for i in range(col_cnt)[start_col:4]:
             io_type = sh.cell(id_row-1, i).value
             name = sh.cell(nm_row, i).value
             code = self.utility.convert_code(sh.cell(id_row, i).value)
             unit = sh.cell(unit_row, i).value
-            print "code:%s name:%s unit:%s"%(code, name, unit)
             series = Series()
             series.io_type = io_type
             series.code = code

@@ -7,6 +7,7 @@ from wb_engine.nts import NtsCaldulator
 from wb_engine.pca import PcaCalculator
 from operator import itemgetter
 from wb_engine.io_template import IoTemplate
+from wb_engine.db import dbHelper
 import copy
 
 
@@ -18,31 +19,39 @@ class WbEngine():
     def run_total(self):
         result = self.run()
 
-    def run(self, params):
+    def run(self, params, options):
         
         t0 = params['t0'] # 초기   날짜 세팅
         t1 = params['t1'] # 마지막 날짜 세팅
         
-        read_module = wb_engine.read.ReadModule(t0, t1) # 읽기 모듈 객체화
-        input_path = os.getcwd() + "\\input"            # input file 경로 설정
-        
         iv_total = []
         iv_total_out = []
+
+        # 엑셀에서 인풋 받기
+        read_module = wb_engine.read.ReadModule(t0, t1) # 읽기 모듈 객체화
+        input_path = os.getcwd() + "\\input"            # input file 경로 설정
         iv_path = input_path + u"\\iv\\"                # 독립변수 파일 경로 /iv 세팅
         paths = os.listdir(iv_path)                     # 독립변수 파일 경로 /iv 내 파일 리스트 가지고 오기
-                
+
         for path in paths:                              # 개발중이므로 한 파일만 읽는다.
             full_path = iv_path + path
             iv_total.extend(read_module.read_file(full_path))
 
+        # 디비에서 인풋 받기
+        qr = wb_engine.db.queries(t0, t1)                       # 쿼리 로직 객체화
+        items = qr.getItems(options.userId, options.seq)   # 유저 셋팅 아이템 받기
+        iv_total_db = []
+        iv_total_db.extend(items)
 
         iv_total_new = []
         for iv in iv_total:
             if iv.io_type == 'I':
                 iv_total_new.append(iv)
+            else:
+                sys.exit()
         iv_total = iv_total_new
 
-        iv_total_out = copy.deepcopy(iv_total)
+        iv_total_out = copy.deepcopy(iv_total_db)
 
         # debug 용 데이터 축소
         # iv_total = iv_total[:12]
@@ -53,8 +62,10 @@ class WbEngine():
             iv_code[iv.code] = iv.name            
         
         # 종속변수 로딩
-        dv_1 = read_module.read_file(input_path + u"\\dv.xlsx")        
-        
+        # dv_1 = read_module.read_file(input_path + u"\\dv.xlsx")
+        # dv_db = qr.getDv()
+        dv_1 = qr.getDv()
+        # sys.exit()
         # monthly date list
         du = DateUtility()
         month_list_str, month_list_months = du.get_montly_span(t0, t1) # t0와 t1 월별날짜 리스트 계산

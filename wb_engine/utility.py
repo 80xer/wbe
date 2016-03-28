@@ -43,6 +43,14 @@ class DateUtility():
     def convert2months(self, dt):
         return dt.year * 12 + dt.month
 
+
+    def getCol_values(self, listData, col, start_row, end_row):
+        results = []
+        for i in range(start_row, end_row):
+            # print "listData[%s][col]:%s" %(i, listData[i][col])
+            results.append(listData[i][col])
+        return results
+
 class Utility():
     # code --> 00000
     def convert_code(self, code):
@@ -57,3 +65,4 @@ class Utility():
         pre_fix = "0"*(5 - len(str_code))
         str_code = pre_fix + str_code
         return str_code
+
