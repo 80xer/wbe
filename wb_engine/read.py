@@ -17,6 +17,15 @@ def convert_series_list_to_dataframe(series_list):
 
     return df
 
+# 시계열 조정 (최대 4개월)
+def revision_date(series_list, months):
+    iv_rev = []
+
+    for series in series_list:
+        print series
+        iv_rev.append(series)
+    return iv_rev
+
 # Series[] 클래스
 class Series():
     """
@@ -67,15 +76,43 @@ class Series():
         self.intp_x = new_x         # 정수형 날짜
         self.intp_x_str = new_x_str # YYYYMM
         self.intp_y = new_y         # 내삽 결과
-        
-    def data_cleasing(self): #데이터 클렌징 null 인것들 제외
+
+    # 데이터 클렌징 null 인것들 제외 - 이전 버전
+    # 시계열 조정되도록 수정 - 2016.04.01 이동은
+    #
+    def data_cleansing(self, t0, t1):
         new_date = []
         new_value = []
 
         for i in range(len(self.value)):
             if self.value[i] != '' and self.value[i] != None:
-                new_date.append(self.date[i])
-                new_value.append(self.value[i])
+                idx = self.date[i]
+
+        shift = 4
+
+        du = DateUtility()
+
+        diffMonth = du.diff_month(t1, idx)
+
+        if diffMonth < shift:
+            shift = diffMonth
+
+        print shift
+
+        j = 0
+        first = 0
+        for i in range(len(self.value)):
+            if self.date[i] >= t0 and self.date[i] <= t1:
+                if first == 0:
+                    first = i
+                if i > shift + first:
+                    j = j + 1
+
+                if self.date[j] <= idx:
+                    new_date.append(self.date[i])
+                    new_value.append(self.value[j])
+            else:
+                j = j + 1
 
         self.value = new_value
         self.date = new_date
@@ -106,7 +143,7 @@ class ReadModule():
     # 시트에서 데이터 추출하기
     def extract_from_sheet(self, book, sh, date_col=0, id_row=2, nm_row=3, unit_row=4, start_col=1, start_row=5):
         series_result = []
-
+        du = DateUtility()
         date_values = sh.col_values(date_col, start_rowx=start_row, end_rowx=sh.nrows) # 날짜 값
         date_type = sh.col_types(date_col, start_rowx=start_row, end_rowx=sh.nrows)    # 날짜 타입
 
@@ -135,14 +172,16 @@ class ReadModule():
             series.io_type = io_type
             series.code = code
             series.name = name
-            series.group = unit       
+            series.group = unit
             series.value = sh.col_values(i, start_row)
             series.date = date_result
-            series.data_cleasing()
+            series.data_cleansing(self.t0, self.t1)
             series.set_freq()
 
             # Full data 만 sheet list에 등록
-            if series.date[0] <= self.t0 and series.date[-1] >= self.t1:
+            du = DateUtility()
+
+            if series.date[0] <= self.t0 and series.date[-1] >= du.subtract_months(self.t1, 4):
                 series_result.append(series)
 
         return series_result

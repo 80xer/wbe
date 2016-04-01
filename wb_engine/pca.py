@@ -47,8 +47,8 @@ class PcaCalculator():
             sum2 += wt[0][i] * iv_df.get_value(0, iv_df.columns.tolist()[i])
             sum3 += wt[0][i] * iv_df_out.get_value(0, iv_df_out.columns.tolist()[i])
             
-            print "%s|%s|%s"%(iv_df.columns.tolist()[i], wt[0][i], iv_df.get_value(0, iv_df.columns.tolist()[i]))
-            print "%s|%s|%s"%(iv_df_out.columns.tolist()[i], wt[0][i], iv_df_out.get_value(0, iv_df_out.columns.tolist()[i]))
+            # print "%s|%s|%s"%(iv_df.columns.tolist()[i], wt[0][i], iv_df.get_value(0, iv_df.columns.tolist()[i]))
+            # print "%s|%s|%s"%(iv_df_out.columns.tolist()[i], wt[0][i], iv_df_out.get_value(0, iv_df_out.columns.tolist()[i]))
 
         
         df = pandas.DataFrame()

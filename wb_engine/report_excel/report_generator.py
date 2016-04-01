@@ -124,7 +124,6 @@ class ExcelReportGenerator:
         chart_list = []
 
         for code in iv_sh.columns:
-
             thred_col_idx = col_idx + len(iv_sh.columns)
 
             if code == 'YYYYMM':

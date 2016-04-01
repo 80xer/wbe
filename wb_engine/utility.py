@@ -35,6 +35,16 @@ class DateUtility():
         day = min(sourcedate.day,calendar.monthrange(year,month)[1])
         return datetime.date(year,month,day)
 
+    def subtract_months(self, sourcedate, months):
+        month = sourcedate.month - months
+        year = sourcedate.year
+        if month < 0:
+            year = year - 1
+            month = 12 + month
+        day = 1
+        print datetime.date(year, month, day)
+        return datetime.date(year, month, day)
+
     # datetime.datetime --> YYYYMM
     def convert2yyyymm(self, dt):
         return dt.strftime('%Y%m')
@@ -51,17 +61,18 @@ class DateUtility():
             results.append(listData[i][col])
         return results
 
-class Utility():
+
+class Utility:
     # code --> 00000
+    def __init__(self):
+        return
+
     def convert_code(self, code):
         try:
             str_code = "{0:d}".format(int(code))
         except Exception:
             str_code = code
-        
-        if len(str_code) < 5:
-            a = 1;
-                
+
         pre_fix = "0"*(5 - len(str_code))
         str_code = pre_fix + str_code
         return str_code

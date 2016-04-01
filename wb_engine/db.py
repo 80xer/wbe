@@ -122,7 +122,7 @@ class queries():
             series.group = unit
             series.value = du.getCol_values(data, i, start_row, len(data))
             series.date = date_result
-            series.data_cleasing()
+            series.data_cleansing()
             series.set_freq()
 
             if series.date[0] <= self.t0 and series.date[-1] >= self.t1:

@@ -32,8 +32,8 @@ class PreProcessing():
     # df 의 전반적인 시계열 길이가 1 축소
     def get_adf_test_after_df(self, df, df_out, iv_info_dict):        
 
-        df = df.sort(['DATE'], ascending=[1]) # 정렬한번 하고 시작
-        df_out = df_out.sort(['DATE'], ascending=[1])
+        df = df.sort_values('DATE', ascending=[1]) # 정렬한번 하고 시작
+        df_out = df_out.sort_values('DATE', ascending=[1])
                 
         columns = df.columns
         col_data = columns[2:]
@@ -64,7 +64,7 @@ class PreProcessing():
     # df 의 전반적인 시계열 길이가 1 축소
     def get_hp_filter(self, df, param):        
 
-        df = df.sort(['DATE'], ascending=[1]) # 정렬한번 하고 시작
+        df = df.sort_values('DATE', ascending=[1]) # 정렬한번 하고 시작
         hp = HpFilter()
         columns = df.columns
         col_data = columns[2:]
