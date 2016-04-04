@@ -32,12 +32,12 @@ class Series():
 
     def set_freq(self):
         if len(self.date) > 1:
-            td = self.date[1] - self.date[0] #두 날짜 사이의 간격
-            if td.days > 25 :  # 25일 이상일 경우  monthly
+            td = self.date[1] - self.date[0] # 두 날짜 사이의 간격
+            if td.days > 25:  # 25일 이상일 경우  monthly
                 self.freq = 'M'
-            elif td.days > 6 : # 6일 이상일 경우   weekly
+            elif td.days > 6: # 6일 이상일 경우   weekly
                 self.freq = 'W'
-            else:              # 그 외             daily
+            else:             # 그 외             daily
                 self.freq = 'D'
 
     def set_monthly_data(self):
@@ -51,11 +51,15 @@ class Series():
 
         for i in range(len(self.date)):
             if datetime.date(self.date[i].year, self.date[i].month, 1) not in new_date:
-                new_date.append(datetime.date(self.date[i].year, self.date[i].month, 1)) #새로운 月 추가
-                new_date_months.append(du.convert2months(new_date[-1]))                  #year*12 + month 추가
+                # 새로운 月 추가
+                new_date.append(datetime.date(self.date[i].year, self.date[i].month, 1))
+                # year*12 + month 추가
+                new_date_months.append(du.convert2months(new_date[-1]))
                 new_value.append(self.value[i])
-            else :
-                new_value[-1] = self.value[i] # 가장 최신 데이터로 갱신한다. 월별로 가장 마지막 데이터를 갖고 오는 것.
+            else:
+                # 가장 최신 데이터로 갱신한다.
+                # 월별로 가장 마지막 데이터를 갖고 오는 것.
+                new_value[-1] = self.value[i]
 
         # 기존 변수들 갱신
         self.date = new_date
