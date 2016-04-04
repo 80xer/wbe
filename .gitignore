@@ -1,6 +1,6 @@
 
 output
-wb_engine/report*.html
+wb_engine/report/*.html
 wb_engine/report/sub/*.html
 
 # Created by https://www.gitignore.io/api/windows,python,pycharm

@@ -70,7 +70,7 @@ class Series():
         self.intp_x_str = new_x_str # YYYYMM
         self.intp_y = new_y         # 내삽 결과
 
-    # 데이터 클렌징 null 인것들 제외 - 이전 버전
+    # 데이터 클렌징 null 인것들 제외
     # 시계열 조정되도록 수정 - 2016.04.01 이동은
     #
     def data_cleansing(self, t0, t1):
@@ -81,10 +81,11 @@ class Series():
 
         for i in range(len(self.value)):
             if self.value[i] != '' and self.value[i] != None:
-                idx = self.date[i]
+                idx = self.date[i]  #해수부 시계열 조정 요청에 따라 마지막 데이터 수취 일자 저장.
                 origin_value.append(self.value[i])
                 origin_date.append(self.date[i])
 
+        # 해수부 시계열 조정 요청
         shift = 4
 
         du = DateUtility()
@@ -101,11 +102,13 @@ class Series():
                 new_value.append(self.value[i])
                 new_date.append(self.date[i])
 
-        self.value = origin_value
-        self.date = origin_date
+        # self.value = origin_value
+        # self.date = origin_date
         #
-        # self.value = new_value
-        # self.date = new_date
+
+        # 해수부 시계열 조정 요청
+        self.value = new_value
+        self.date = new_date
 
     def shiftList(self, ntimes, lst):
         if ntimes == 0:
@@ -180,8 +183,13 @@ class ReadModule():
             # Full data 만 sheet list에 등록
             du = DateUtility()
 
-            if series.date[0] <= self.t0 and series.date[-1] >= du.subtract_months(self.t1, 4):
+
+            # Full data 만 sheet list에 등록
+            if series.date[0] <= self.t0 and series.date[-1] >= self.t1:
                 series_result.append(series)
+
+            # if series.date[0] <= self.t0 and series.date[-1] >= du.subtract_months(self.t1, 4):
+            #     series_result.append(series)
 
         return series_result
 
