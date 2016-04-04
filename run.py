@@ -21,6 +21,13 @@ parser.add_option(
     help='set debug options')
 
 parser.add_option(
+    '--excel',
+    action='store_true',
+    dest='excel',
+    default=False,
+    help='input from excel file')
+
+parser.add_option(
     '-d', '--default',
     action='store_true',
     dest='default',

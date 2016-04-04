@@ -25,21 +25,6 @@ class WbEngine:
 
         iv_total = []
 
-        # 엑셀에서 독립변수 받기
-        read_module = wb_engine.read.ReadModule(t0, t1)  # 읽기 모듈 객체화
-        input_path = os.getcwd() + "\\input"            # input file 경로 설정
-        iv_path = input_path + u"\\iv\\"                # 독립변수 파일 경로 /iv 세팅
-        paths = os.listdir(iv_path)                     # 독립변수 파일 경로 /iv 내 파일 리스트 가지고 오기
-
-        for path in paths:                              # 개발중이므로 한 파일만 읽는다.
-            full_path = iv_path + path
-            iv_total.extend(read_module.read_file(full_path))
-
-        # 디비에서 독립변수 받기
-        # qr = wb_engine.db.queries(t0, t1)                       # 쿼리 로직 객체화
-        # items = qr.getItems(options.userId, options.seq)   # 유저 셋팅 아이템 받기
-        # iv_total.extend(items)
-
         # 인풋 모두 I 이므로 의미 없어서 주석처리.
         # iv_total_new = []
         # for iv in iv_total:
@@ -49,21 +34,37 @@ class WbEngine:
         #         sys.exit()
         # iv_total = iv_total_new
 
+        if options.excel:
+            # 엑셀에서 독립변수 받기
+            read_module = wb_engine.read.ReadModule(t0, t1)  # 읽기 모듈 객체화
+            input_path = os.getcwd() + "\\input"            # input file 경로 설정
+            iv_path = input_path + u"\\iv\\"                # 독립변수 파일 경로 /iv 세팅
+            paths = os.listdir(iv_path)                     # 독립변수 파일 경로 /iv 내 파일 리스트 가지고 오기
+
+            for path in paths:                              # 개발중이므로 한 파일만 읽는다.
+                full_path = iv_path + path
+                iv_total.extend(read_module.read_file(full_path))
+
+            # 엑셀에서 종속변수 받기
+            dv_1 = read_module.read_file(input_path + u"\\dv.xlsx")
+        else:
+            # 디비에서 독립변수 받기
+            qr = wb_engine.db.queries(t0, t1)                       # 쿼리 로직 객체화
+            items = qr.getItems(options.userId, options.seq)   # 유저 셋팅 아이템 받기
+            iv_total.extend(items)
+
+            # 디비에서 종속변수 받기
+            dv_1 = qr.getDv()
+
         # debug 용 데이터 축소
         if options.debug:
             iv_total = iv_total[:12]
             print "length of iv_total is %s" %len(iv_total)
 
-        # 독립변수별 코드 <--> 이름 Dictionary 세팅                    
+        # 독립변수별 코드 <--> 이름 Dictionary 세팅
         iv_code = {}
         for iv in iv_total:
             iv_code[iv.code] = iv.name
-
-        # 엑셀에서 종속변수 받기
-        dv_1 = read_module.read_file(input_path + u"\\dv.xlsx")
-
-        # 디비에서 종속변수 받기
-        # dv_1 = qr.getDv()
 
         du = DateUtility()
 
@@ -77,7 +78,7 @@ class WbEngine:
 
         iv_info_dict = {}
         for iv in iv_total:
-            iv.set_monthly_data()  #같은월에 여러 데이터중 최신 데이터만
+            iv.set_monthly_data()  # 같은월에 여러 데이터중 최신 데이터만
             # 내삽
             iv.set_interpolated_data(month_list_months, month_list_str)
             iv_info_dict[iv.code] = {}
@@ -101,9 +102,9 @@ class WbEngine:
 
         df_iv = wb_engine.read.convert_series_list_to_dataframe(iv_total)
 
-        # out of sample months ---------------------------------------------------------------
+        # out of sample months -------------------------------------------------
         df_iv_out = wb_engine.read.convert_series_list_to_dataframe(iv_total_out)
-        # ------------------------------------------------------------------------------------
+        # ----------------------------------------------------------------------
 
         io = IO()
         io.print_df('df', df_iv)
@@ -118,16 +119,16 @@ class WbEngine:
         # ADF 테스트 후 차분
         df_iv, df_iv_out = pp.get_adf_test_after_df(df_iv, df_iv_out, iv_info_dict) # 시계열 길이 하나 줄어들음.
 
-        # out of sample months ---------------------------------------------------------------
+        # out of sample months -------------------------------------------------
         # df_iv_out = pp.get_adf_test_after_df(df_iv_out, iv_info_dict) # 시계열 길이 하나 줄어들음.
-        # ------------------------------------------------------------------------------------
+        # ----------------------------------------------------------------------
 
         # Hp Filter
         df_iv = pp.get_hp_filter(df_iv, params['hp_filter'])
 
-        # out of sample months ---------------------------------------------------------------
+        # out of sample months -------------------------------------------------
         df_iv_out = pp.get_hp_filter(df_iv_out, params['hp_filter'])
-        # ------------------------------------------------------------------------------------
+        # ----------------------------------------------------------------------
 
         # io.print_df('df_iv', df_iv)
         # df_iv = pp.scale_iv(df_iv)
@@ -141,7 +142,8 @@ class WbEngine:
 
         io.print_df('df_dv', df_dv)
 
-        # there is no need to shift timelie changing definition of crisis to "within"
+        # there is no need to shift timelie changing definition of crisis to \
+        # "within"
         # 변수 shifting
         # df_dv_sh = pp.time_shift(df_dv, params['intv']) # 여기가 문제
         # df_iv_sh = df_iv[:len(df_iv)-params['intv']]
@@ -156,13 +158,19 @@ class WbEngine:
 
         # nts 계산
         nts_module = NtsCaldulator()
-        dv_crisis_digit_list, dv_thres = nts_module.cal_nts_total(df_iv_sh, iv_info_dict, params['intv'], params['thres_cut'], params['dv_thres'], params['lag_cut'])
-        # iv_info_dict 에 nts 관련 정보 적재  (2016.03.10) nts 계산에서 선행기간 내 위기식별 구간 제한 추가작업 lag_cut
+        dv_crisis_digit_list, dv_thres = \
+            nts_module.cal_nts_total(df_iv_sh, iv_info_dict, params['intv'],
+                                     params['thres_cut'], params['dv_thres'],
+                                     params['lag_cut'])
+        # iv_info_dict 에 nts 관련 정보 적재  (2016.03.10) nts 계산에서 \
+        # 선행기간 내 위기식별 구간 제한 추가작업 lag_cut
         # nts_module.cal_nts_by_digit(df_iv_sh, dv_crisis_digit_list)
         io.print_nts_info(iv_info_dict, 'iv_info')
 
         # nts 에 따른 thres와 digit 저장
-        df_iv_sh_digit = nts_module.get_iv_sh_digit(df_iv_sh, iv_info_dict, params['dv_thres'], params['dv_dir'])
+        df_iv_sh_digit = nts_module.get_iv_sh_digit(df_iv_sh, iv_info_dict,
+                                                    params['dv_thres'],
+                                                    params['dv_dir'])
 
         srted = sorted(iv_info_dict.iteritems(), key=self.get_value, reverse=False)
         filtered = [s for s in srted if s[1]['nts'] < params['nts_thres']]
@@ -173,13 +181,14 @@ class WbEngine:
             code_list.append(f[0])
 
         df_iv_flt = df_iv_sh[code_list]
-        df_iv_flt_out = df_iv_sh_out[code_list] # out of sample
+        df_iv_flt_out = df_iv_sh_out[code_list]  # out of sample
 
         io.print_df('df_iv_flt', df_iv_flt)
 
         pca_module = PcaCalculator()
 
-        y, wt, fracs, df_factor, df_factor_out = pca_module.run_cap(df_iv_flt, df_iv_flt_out, params['pca_thres'])
+        y, wt, fracs, df_factor, df_factor_out = \
+            pca_module.run_cap(df_iv_flt, df_iv_flt_out, params['pca_thres'])
 
         factor_weight = {}
         factor_weight['col_list'] = df_iv_flt.columns.tolist()
@@ -202,15 +211,19 @@ class WbEngine:
             factor_info_dict[col] = {}
 
         # df_factor['DV'] = df_dv_sh[df_dv_sh.columns[2]]
-        nts_module.cal_nts_total(df_factor_series, factor_info_dict, params['intv'], params['thres_cut'], params['dv_thres'] , params['lag_cut'])
+        nts_module.cal_nts_total(df_factor_series, factor_info_dict,
+                                 params['intv'], params['thres_cut'],
+                                 params['dv_thres'] , params['lag_cut'])
         # (2016.03.10) nts 계산에서 선행기간 내 위기식별 구간 제한 추가작업 lag_cut
 
         for i in range(len(df_factor.columns.tolist())):
-            factor_info_dict[df_factor.columns.tolist()[i]]['weight'] = factor_weight['fracs'][i]
+            factor_info_dict[df_factor.columns.tolist()[i]]['weight'] = \
+                factor_weight['fracs'][i]
 
         # 위기지수 계산
         df_warning_idx = self.cal_warning_idx(factor_info_dict, df_factor_series)
-        df_warning_idx_out = self.cal_warning_idx(factor_info_dict, df_factor_series_out)
+        df_warning_idx_out = \
+            self.cal_warning_idx(factor_info_dict, df_factor_series_out)
 
         result = {}
         result['params'] = params

@@ -7,7 +7,7 @@ from wb_engine.utility import Utility
 from wb_engine.preprocessing import PreProcessing
 
 
-# Series[] 를 dataframe으로 변환해 준다.
+# Series[] 를 'dataframe'으로 변환해 준다.
 def convert_series_list_to_dataframe(series_list):
     df = pandas.DataFrame()
     df['YYYYMM'] = pandas.Series(series_list[0].intp_x_str)
@@ -16,6 +16,7 @@ def convert_series_list_to_dataframe(series_list):
         df[series.code] = pandas.Series(series.intp_y)
 
     return df
+
 
 # Series[] 클래스
 class Series():
@@ -90,12 +91,12 @@ class Series():
 
         du = DateUtility()
 
-        diffMonth = du.diff_month(t1, idx)
+        diffmonth = du.diff_month(t1, idx)
 
-        if diffMonth < shift:
-            shift = diffMonth
+        if diffmonth < shift:
+            shift = diffmonth
 
-        self.value = self.shiftList(shift, self.value)
+        self.value = self.shiftlist(shift, self.value)
 
         for i in range(len(self.value)):
             if self.value[i] != '' and self.value[i] != None:
@@ -104,21 +105,21 @@ class Series():
 
         # self.value = origin_value
         # self.date = origin_date
-        #
 
         # 해수부 시계열 조정 요청
         self.value = new_value
         self.date = new_date
 
-    def shiftList(self, ntimes, lst):
+    def shiftlist(self, ntimes, lst):
         if ntimes == 0:
             return lst
         else:
             for index in range(len(lst) - 1, 0, -1):
                 lst[index] = lst[index - 1]
 
-            return self.shiftList(ntimes-1, lst)
-        return self.shiftList(n, lst)
+            return self.shiftlist(ntimes - 1, lst)
+        return self.shiftlist(n, lst)
+
 
 class ReadModule():
 
@@ -165,7 +166,7 @@ class ReadModule():
         col_cnt = sh.row_len(id_row)
 
         for i in range(col_cnt)[start_col:]:
-        #for i in range(col_cnt)[start_col:4]:
+        # for i in range(col_cnt)[start_col:4]:
             io_type = sh.cell(id_row-1, i).value
             name = sh.cell(nm_row, i).value
             code = self.utility.convert_code(sh.cell(id_row, i).value)
