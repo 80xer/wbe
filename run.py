@@ -65,9 +65,9 @@ print '*************************************************'
 # INPUT SETTING ##################################
 paramsDefault = {
     'nts_thres': 0.5                        # NTS 필터 값
-    , 't0': datetime.date(2004, 2, 1)         # 데이터 초기 시점
-    , 't1': datetime.date(2004, 9, 1)         # 데이터 로딩 마지막 시점
-    , 't2': datetime.date(2004, 9, 1)         # 데이터 러닝 마지막 시점
+    , 't0': datetime.date(2004, 01, 01)         # 데이터 초기 시점
+    , 't1': datetime.date(2016, 2, 01)         # 데이터 로딩 마지막 시점
+    , 't2': datetime.date(2016, 2, 01)         # 데이터 러닝 마지막 시점
     , 'hp_filter': 10                         # HP필터 값
     , 'pca_thres': 0.9                        # PCA 필터 값
     , 'dv_dir': 'up'                          # 종속변수 위기 방향

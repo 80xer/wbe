@@ -50,7 +50,7 @@ class WbEngine:
         # iv_total = iv_total_new
 
         # debug 용 데이터 축소
-        if  options.debug:
+        if options.debug:
             iv_total = iv_total[:12]
             print "length of iv_total is %s" %len(iv_total)
 
@@ -63,7 +63,7 @@ class WbEngine:
         dv_1 = read_module.read_file(input_path + u"\\dv.xlsx")
 
         # 디비에서 종속변수 받기
-        # dv_db = qr.getDv()
+        # dv_1 = qr.getDv()
 
         du = DateUtility()
 

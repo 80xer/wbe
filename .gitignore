@@ -1,4 +1,8 @@
 
+output
+wb_engine/report*.html
+wb_engine/report/sub/*.html
+
 # Created by https://www.gitignore.io/api/windows,python,pycharm
 
 ### Windows ###
@@ -155,5 +159,3 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
-
-output

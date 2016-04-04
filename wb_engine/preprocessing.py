@@ -22,7 +22,7 @@ class PreProcessing():
     def get_adf_test(self, x, p):
         result = ts.adfuller(x)
         pvalue = result[1]                
-        if pvalue < p :
+        if pvalue < p:
             test_result = True
         else:
             test_result = False

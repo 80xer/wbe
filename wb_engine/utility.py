@@ -42,7 +42,6 @@ class DateUtility():
             year = year - 1
             month = 12 + month
         day = 1
-        print datetime.date(year, month, day)
         return datetime.date(year, month, day)
 
     # datetime.datetime --> YYYYMM
