@@ -32,14 +32,17 @@ class dbHelper():
         conn.close()
         return results
 
-    def execute(self, query):
-        x = conn.cursor()
+    def executeMany(self, query, data):
+        conn = self.getConn()
+        cur = conn.cursor()
 
         try:
-           x.execute(query)
+           cur.executemany(query, data)
            conn.commit()
-        except:
-           conn.rollback()
+        except Exception as inst:
+            print type(inst)
+            print inst.args
+            conn.rollback()
 
         conn.close()
 
@@ -50,6 +53,8 @@ class queries():
     def getSetup(self, id, seq):
 
         # 변수별 컬럼 값
+        ID_NM = 0
+        SEQ = 1
         START_DT = 2
         END_DT = 3
         LEARN_DT = 4
@@ -74,13 +79,15 @@ class queries():
         dbDataDV = dataTuples[0]
 
         result = {}
+        result['id_nm'] = dbData[ID_NM]
+        result['seq'] = dbData[SEQ]
         result['nts_thres'] = dbData[NTS]
         result['t0'] = datetime.datetime.strptime(str(dbData[START_DT]) + '01', '%Y%m%d').date()
         result['t1'] = datetime.datetime.strptime(str(dbData[END_DT]) + '01', '%Y%m%d').date()
         result['t2'] = datetime.datetime.strptime(str(dbData[LEARN_DT]) + '01', '%Y%m%d').date()
         result['pca_thres'] = dbData[PCA]
-        result['intv'] = dbData[LAG]
-        result['lag_cut'] = dbData[LAG_CUT]
+        result['intv'] = int(dbData[LAG])
+        result['lag_cut'] = int(dbData[LAG_CUT])
         result['scaling'] = dbData[SCALING]
         result['hp_filter'] = dbData[FILTER]
         result['dv_dir'] = dbDataDV[DIR]
@@ -184,14 +191,210 @@ class queries():
 
 class outputToDB:
 
-    def insert_report(self, data):
-        self.insert_raw_iv(data)
+    def __init__(self, params):
+        self.params = params
 
-    def insert_raw_iv(self, data):
+    def insert_report(self, data):
+        self.insert_iv(data)
+        self.insert_factor(data)
+        self.insert_factor_weight(data)
+
+    def insert_iv(self, data):
         db = dbHelper()
         iv_sh = data['df_iv_sh']
+        iv_sh_digit = data['df_iv_sh_digit']
         iv_info = data['iv_info_dict']
 
-        for code in iv_sh.columns:
-            print code
-            print iv_sh[code]
+        insertData = []
+        elem = ()
+
+        for col in iv_sh.columns:
+            if col != 'YYYYMM' and col != 'DATE' and col != 'DV':
+                for j in range(len(iv_sh[col])):
+                    elem = ()
+                    if datetime.datetime.strptime(
+                        iv_sh['YYYYMM'][j] + '01', '%Y%m%d'
+                    ).date() == self.params['t1']:
+                        elem = (str(self.params['id_nm']),
+                               str(iv_sh['YYYYMM'][j]),
+                               str(col),
+                               iv_sh[col][j],
+                               int(iv_sh_digit[col][j]),
+                               iv_info[col]['dir'],
+                               iv_info[col]['nts'],
+                               iv_info[col]['thres'],
+                               iv_info[col]['a'],
+                               iv_info[col]['b'],
+                               iv_info[col]['c'],
+                               iv_info[col]['d'],
+                               iv_info[col]['adf_test'],
+                               )
+                    else:
+                        elem = (str(self.params['id_nm']),
+                               str(iv_sh['YYYYMM'][j]),
+                               str(col),
+                               iv_sh[col][j],
+                               int(iv_sh_digit[col][j]),
+                               None,
+                               None,
+                               None,
+                               None,
+                               None,
+                               None,
+                               None,
+                               None,
+                               )
+
+                    insertData.append(elem)
+
+        insertStr = """INSERT INTO wbs_ind_var_detail_set
+            (ID_NM, TRD_DT, ITEM_CD, DIFF_AMOUNT, CRISIS_GB, UP_DN, NTS,
+            THRESHOLD, VAR_A, VAR_B, VAR_C, VAR_D, ADF_GB)
+            VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+
+        conn = db.getConn()
+        cur = conn.cursor()
+
+        try:
+            cur.execute(
+                """DELETE from wbs_ind_var_detail_set where id_nm = %s""",
+                self.params['id_nm'])
+            cur.executemany(insertStr, insertData)
+            conn.commit()
+        except Exception as inst:
+            print type(inst)
+            print inst.args
+            conn.rollback()
+
+        conn.close()
+
+    def insert_factor(self, data):
+        db = dbHelper()
+        iv_sh = data['df_factor_yyyymm']
+        iv_info = data['factor_info_dict']
+        fw = data['factor_weight']
+        weight = fw['weight']
+        fracs = fw['fracs']
+
+        insertData = []
+        elem = ()
+
+        code_ordered = []
+        code_ordered.append('YYYYMM')
+        for c in iv_sh.columns:
+            if c != 'DV' and c != 'YYYYMM':
+                code_ordered.append(c)
+        code_ordered.append('DV')
+
+        for col in code_ordered:
+            if col != 'YYYYMM' and col != 'DATE' and col != 'DV':
+                num = col.replace('FAC', '')
+                for j in range(len(iv_sh[col])):
+                    if datetime.datetime.strptime(
+                        iv_sh['YYYYMM'][j] + '01', '%Y%m%d'
+                    ).date() == self.params['t1']:
+                        elem = (str(self.params['seq']),
+                                str(self.params['id_nm']),
+                                str(iv_sh['YYYYMM'][j]),
+                                str(col),
+                                iv_sh[col][j],
+                                fracs[int(num)],
+                                iv_info[col]['nts'],
+                                iv_info[col]['a'],
+                                iv_info[col]['b'],
+                                iv_info[col]['c'],
+                                iv_info[col]['d'],
+                                None,
+                                iv_info[col]['dir'],
+                                None,   #iv_info[col]['adf_test'],
+                                iv_info[col]['thres'],
+                               )
+                    else:
+                        elem = (str(self.params['seq']),
+                                str(self.params['id_nm']),
+                                str(iv_sh['YYYYMM'][j]),
+                                str(col),
+                                iv_sh[col][j],
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                               )
+
+                    insertData.append(elem)
+
+        insertStr = """INSERT INTO wbs_fact_info_set
+            (CRE_SEQ, ID_NM, TRD_DT, FACT_NM, AMOUNT, FACT_WT, FACT_NTS,
+            VAR_A, VAR_B, VAR_C, VAR_D, CRISIS_GB, UP_DN, ADF_GB, FACT_THRESHOLD )
+            VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+
+        conn = db.getConn()
+        cur = conn.cursor()
+
+        try:
+            cur.execute(
+                """DELETE from wbs_fact_info_set where id_nm = %s and cre_seq = %s""",
+                (self.params['id_nm'], self.params['seq']))
+            cur.executemany(insertStr, insertData)
+            conn.commit()
+        except Exception as inst:
+            print type(inst)
+            print inst.args
+            conn.rollback()
+
+        conn.close()
+
+    def insert_factor_weight(self, data):
+        db = dbHelper()
+        fw = data['factor_weight']
+        iv_list = fw['col_list']
+        weight = fw['weight']
+
+        insertData = []
+        elem = ()
+
+        for i in range(len(weight)):
+            for j in range(len(iv_list)):
+                # print self.params['seq']
+                # print self.params['id_nm']
+                # print self.params['t1']
+                # print 'FAC%s' %i
+                # print iv_list[i]
+                # print weight[i][j]
+
+                elem = (str(self.params['seq']),
+                        str(self.params['id_nm']),
+                        str(self.params['t1'].strftime('%Y%d')),
+                        'FAC%s' %i,
+                        iv_list[j],
+                        weight[i][j]
+                       )
+
+                insertData.append(elem)
+
+
+        insertStr = """INSERT INTO wbs_ind_wt_set
+            (CRE_SEQ, ID_NM, TRD_DT, FACT_NM, ITEM_CD, ITEM_WT)
+            VALUES(%s, %s, %s, %s, %s, %s)"""
+
+        conn = db.getConn()
+        cur = conn.cursor()
+
+        try:
+            cur.execute(
+                """DELETE from wbs_ind_wt_set where id_nm = %s and cre_seq = %s""",
+                (self.params['id_nm'], self.params['seq']))
+            cur.executemany(insertStr, insertData)
+            conn.commit()
+        except Exception as inst:
+            print type(inst)
+            print inst.args
+            conn.rollback()
+
+        conn.close()

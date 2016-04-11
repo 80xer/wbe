@@ -95,7 +95,7 @@ paramsDefault = {
     't2': datetime.date(2016, 2, 1),         # 데이터 러닝 마지막 시점
     'hp_filter': 10,                         # HP필터 값
     'pca_thres': 0.9,                        # PCA 필터 값
-    'dv_dir': 'up',                          # 종속변수 위기 방향
+    'dv_dir': 'U',                          # 종속변수 위기 방향
     'intv': 6,                               # 위기발생유효기간
     'lag_cut': 6,                             # 위기발생 인식기간 제한
     'thres_cut': 0.2,                        # 상위 20% 컷
@@ -154,7 +154,7 @@ else:
 # params = {}
 qr = wb_engine.db.queries()
 result = qr.getSetup(options.userId, options.seq)
-# todo - result 로 params 변경
+params = result
 
 # print options
 print '%s' %('{:*^60}'.format(''))
@@ -186,9 +186,9 @@ result = engine.run(params, options, qr)
 # report_html.make_report(result)
 
 # excel
-xlsHelper = ExcelReportGenerator()
-xlsHelper.make_report(result)
+# xlsHelper = ExcelReportGenerator()
+# xlsHelper.make_report(result)
 
 # db output
-dbHelper = wb_engine.db.outputToDB()
+dbHelper = wb_engine.db.outputToDB(params)
 dbHelper.insert_report(result)

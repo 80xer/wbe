@@ -54,12 +54,12 @@ class NtsCaldulator():
         nts_info = {}
         if up_min[1][0] < dn_min[1][0]:
             nts_info.update(up_min[1][1])
-            nts_info['dir'] = 'up'
+            nts_info['dir'] = 'U'
             nts_info['thres'] = up_min[0]
             nts_info['nts'] = up_min[1][0]            
         else:
             nts_info.update(dn_min[1][1])
-            nts_info['dir'] = 'down'
+            nts_info['dir'] = 'D'
             nts_info['thres'] = dn_min[0]
             nts_info['nts'] = dn_min[1][0]
 
@@ -73,7 +73,7 @@ class NtsCaldulator():
             if d > thres:
                 crisis_digit_up.append(True)
             else:
-                crisis_digit_up.append(False)        
+                crisis_digit_up.append(False)
         for d in iv:
             if d < thres:
                 crisis_digit_down.append(True)
@@ -161,23 +161,23 @@ class NtsCaldulator():
                 if col != 'DV' and col != 'DATE' and col != 'YYYYMM':      
                     thres = iv_info[col]['thres']
                     dir = iv_info[col]['dir']
-                    if dir == 'up':                    
+                    if dir == 'U':
                         if df_iv_sh[col][i] >= thres:
                             df_iv_sh_digit.set_value(i, col, 1)
                         else:
                             df_iv_sh_digit.set_value(i, col, 0)
-                    elif dir == 'down':
+                    elif dir == 'D':
                         if df_iv_sh[col][i] <= thres:
                             df_iv_sh_digit.set_value(i, col, 1)
                         else:
                             df_iv_sh_digit.set_value(i, col, 0)
                 elif col == 'DV':
-                    if dv_dir == 'up':
+                    if dv_dir == 'U':
                         if df_iv_sh[col][i] >= dv_thres:
                             df_iv_sh_digit.set_value(i, col, 1)
                         else:
                             df_iv_sh_digit.set_value(i, col, 0)
-                    elif dv_dir == 'down':
+                    elif dv_dir == 'D':
                         if df_iv_sh[col][i] <= dv_thres:
                             df_iv_sh_digit.set_value(i, col, 1)
                         else:

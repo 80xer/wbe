@@ -274,10 +274,10 @@ class WbEngine:
                 dir = v['dir']
                 thres = v['thres']
                 nts = v['nts']
-                if dir == 'up' :
+                if dir == 'U':
                     if df_warning_idx[k][i] > thres:    # 위기여부 1
                         idx_sum += v['weight'] * 1.0
-                elif dir == 'down':
+                elif dir == 'D':
                     if df_warning_idx[k][i] < thres:    # 위기여부 1
                         idx_sum += v['weight'] * 1.0
             warning_idx = idx_sum / weight_sum
