@@ -6,17 +6,19 @@ from wb_engine.read import Series
 
 class IO():
 
-    def __init__(self): # SERIES 출력        
-        self.output_path = os.getcwd() + "\\output";        
+    def __init__(self): # SERIES 출력
+        self.output_path = os.getcwd() + "\\output";
+        if not os.path.exists(self.output_path):
+            os.makedirs(self.output_path)
 
     def print_df(self, filename, df):
         filepath = self.output_path + "\\%s.txt"%(filename)
         f = open(filepath, 'w')
         f.write(df.to_csv())
         f.close()
-    
+
     def print_series_list_raw(self, series_list, filename):
-                
+
         series_dict = []
         for series in series_list:
             series_dict.append(series.__dict__)

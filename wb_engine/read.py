@@ -25,9 +25,10 @@ class Series():
     value : value
     freq  : 빈도(M, W, D)
     """
-    def __init__(self):
+    def __init__(self, options):
         self.date = []
         self.value = []
+        self.options = options
         pass
 
     def set_freq(self):
@@ -90,29 +91,35 @@ class Series():
                 origin_value.append(self.value[i])
                 origin_date.append(self.date[i])
 
-        # 해수부 시계열 조정 요청
-        shift = 4
+        if self.options.tshift:
 
-        du = DateUtility()
+            # 해수부 시계열 조정 요청
+            shift = 4
 
-        diffmonth = du.diff_month(t1, idx)
+            du = DateUtility()
 
-        if diffmonth < shift:
-            shift = diffmonth
+            diffmonth = du.diff_month(t1, idx)
 
-        self.value = self.shiftlist(shift, self.value)
+            if diffmonth < shift:
+                shift = diffmonth
 
-        for i in range(len(self.value)):
-            if self.value[i] != '' and self.value[i] != None:
-                new_value.append(self.value[i])
-                new_date.append(self.date[i])
+            self.value = self.shiftlist(shift, self.value)
 
-        # self.value = origin_value
-        # self.date = origin_date
+            for i in range(len(self.value)):
+                if self.value[i] != '' and self.value[i] != None:
+                    new_value.append(self.value[i])
+                    new_date.append(self.date[i])
 
-        # 해수부 시계열 조정 요청
-        self.value = new_value
-        self.date = new_date
+            # self.value = origin_value
+            # self.date = origin_date
+
+            # 해수부 시계열 조정 요청
+            self.value = new_value
+            self.date = new_date
+
+        else:
+            self.value = origin_value
+            self.date = origin_date
 
     def shiftlist(self, ntimes, lst):
         if ntimes == 0:
@@ -130,13 +137,15 @@ class ReadModule():
     """ 생성자
     ReadModule은 t0와 t1 사이의 데이터만 읽는다.
     """
-    def __init__(self, t0, t1):
+    def __init__(self, t0, t1, options):
         self.t0 = t0
         self.t1 = t1
         self.utility = Utility()
+        self.options  = options
 
     # 엑셀파일 읽기
     def read_file(self, path):
+        print ''
         print u"%s 파일 읽기 시작"%(path)
         workbook = xlrd.open_workbook(path)
         sheets = workbook.sheets()
@@ -175,7 +184,7 @@ class ReadModule():
             name = sh.cell(nm_row, i).value
             code = self.utility.convert_code(sh.cell(id_row, i).value)
             unit = sh.cell(unit_row, i).value
-            series = Series()
+            series = Series(self.options)
             series.io_type = io_type
             series.code = code
             series.name = name

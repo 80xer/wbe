@@ -11,6 +11,7 @@ from wb_engine.preprocessing import PreProcessing
 from wb_engine.engine import WbEngine
 from wb_engine.report_excel.report_generator import ExcelReportGenerator
 from wb_engine.io_template import IoTemplate
+from wb_engine.db import dbHelper
 
 parser = optparse.OptionParser('usage run.py <options>')
 parser.add_option(
@@ -18,7 +19,7 @@ parser.add_option(
     action='store_true',
     dest='debug',
     default=False,
-    help='set debug options')
+    help='set debug flag for dataframe cut')
 
 parser.add_option(
     '--excel',
@@ -28,11 +29,11 @@ parser.add_option(
     help='input from excel file')
 
 parser.add_option(
-    '-d', '--default',
+    '--default',
     action='store_true',
     dest='default',
     default=False,
-    help='set default options')
+    help='use default conditions')
 
 parser.add_option(
     '-f', '--fix',
@@ -53,6 +54,19 @@ parser.add_option(
     default='1',
     help='set sequence')
 
+parser.add_option(
+    '-v', '--dv',
+    dest='dv',
+    default='dv',
+    help='choice dependent variable')
+
+parser.add_option(
+    '-t', '--tshift',
+    action='store_true',
+    dest='tshift',
+    default=False,
+    help='shift date series')
+
 (options, args) = parser.parse_args()
 
 if options.fix is False and options.userId is '':
@@ -65,9 +79,13 @@ sys.setdefaultencoding('utf-8')
 # print sys.getdefaultencoding()
 # print locale.getpreferredencoding()
 
-print '*************************************************'
-print 'Shipping indstry Early Warning System Version 1.2'
-print '*************************************************'
+print '\n'
+print '%s' %('{:*^60}'.format(''))
+print '%s%s' %('{:<30}'.format('**'), '{:>30}'.format('**'))
+print '%s' %('{:*^60}'.format('   Shipping indstry Early Warning System Version 1.2    '))
+print '%s%s' %('{:<30}'.format('**'), '{:>30}'.format('**'))
+print '%s' %('{:*^60}'.format(''))
+print '\n'
 
 # INPUT SETTING ##################################
 paramsDefault = {
@@ -125,26 +143,52 @@ else:
         str(t0) + '01', '%Y%m%d').date() or paramsDefault['t2']
     params['pca_thres'] = pca_thres and float(
         pca_thres) or paramsDefault['pca_thres']
-    params['intv'] = intv and int(intv) or paramsDefault['intv']
+    params['intv'] = intv and int(intv) or paramsDefault['intv']  # lag
     params['lag_cut'] = lag_cut and int(lag_cut) or paramsDefault['lag_cut']
     params['scaling'] = scaling or paramsDefault['scaling']
     params['hp_filter'] = hp_filter or paramsDefault['hp_filter']
-    params['dv_dir'] = paramsDefault['dv_dir']
-    params['thres_cut'] = paramsDefault['thres_cut']
-    params['dv_thres'] = paramsDefault['dv_thres']
+    params['dv_dir'] = paramsDefault['dv_dir']  # dv방향성
+    params['thres_cut'] = paramsDefault['thres_cut']  # 20 고정
+    params['dv_thres'] = paramsDefault['dv_thres']  # 임계치
 
-# for x in params:
-#     print "%s : %s" %(x, params[x])
+# params = {}
+qr = wb_engine.db.queries()
+result = qr.getSetup(options.userId, options.seq)
+# todo - result 로 params 변경
+
+# print options
+print '%s' %('{:*^60}'.format(''))
+print '%s : %s' %('{:>27}'.format('debug'), options.debug)
+print '%s : %s' %('{:>27}'.format('default'), options.default)
+print '%s : %s' %('{:>27}'.format('fix'), options.fix)
+print '%s : %s' %('{:>27}'.format('userId'), options.userId)
+print '%s : %s' %('{:>27}'.format('seq'), options.seq)
+print '%s : %s' %('{:>27}'.format('dv'), options.dv)
+print '%s : %s' %('{:>27}'.format('tshift'), options.tshift)
+print '%s : %s' %('{:>27}'.format('excel'), options.excel)
+print '%s' %('{:*^60}'.format(''))
+
+# print parameters
+print '%s' %('{:*^60}'.format(''))
+for x in params:
+    print "%s : %s" %('{:>27}'.format(x), params[x])
+print '%s' %('{:*^60}'.format(''))
+
 
 ##################################################
 
+
 engine = WbEngine()
-result = engine.run(params, options)
+result = engine.run(params, options, qr)
 
 # html
-report_html = IoTemplate()
-report_html.make_report(result)
+# report_html = IoTemplate()
+# report_html.make_report(result)
 
 # excel
-report_module = ExcelReportGenerator()
-report_module.make_report(result)
+xlsHelper = ExcelReportGenerator()
+xlsHelper.make_report(result)
+
+# db output
+dbHelper = wb_engine.db.outputToDB()
+dbHelper.insert_report(result)

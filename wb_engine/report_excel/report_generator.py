@@ -24,11 +24,11 @@ class ExcelReportGenerator:
         # independent variables which are proccessed into montly timeseries.
         ws_raw_iv = self._wb.add_worksheet()
         self.make_raw_iv_sheet(ws_raw_iv, self._wb, data)
-                
+
         # independent variables proccessed into same format(time interval)
         ws_sh_iv = self._wb.add_worksheet()
         self.make_raw_iv_sh(ws_sh_iv, self._wb, data)
-                
+
         # from independent variables digit(crisis/non crisis) to a,b,c,d which used calculating nts
         ws_sh_iv_digit = self._wb.add_worksheet()
         self.make_iv_digit(ws_sh_iv_digit, data)
@@ -44,10 +44,10 @@ class ExcelReportGenerator:
         # factor time series
         ws_factor_ts = self._wb.add_worksheet()
         self.make_factor_ts(ws_factor_ts, self._wb, data)
-        
+
         # warning idx
         # ws_warning_idx = self._wb.add_worksheet()
-        self.make_warning_board_idx(ws_overview, self._wb, data)        
+        self.make_warning_board_idx(ws_overview, self._wb, data)
         self.make_warning_board_idx_out(ws_warning_idx_out, self._wb, data)
 
 
@@ -80,7 +80,7 @@ class ExcelReportGenerator:
 
     def make_raw_iv_sheet(self, sh, wb, data):
 
-        sh.name = u"투입독립변수"
+        sh.name = u"투입독립변수1"
         iv_raw = data['iv_raw']
         col_idx = 8
         iv_cnt = 0

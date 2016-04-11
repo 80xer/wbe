@@ -18,7 +18,7 @@ class WbEngine:
     def __init__(self):
         return
 
-    def run(self, params, options):
+    def run(self, params, options, qr):
 
         t0 = params['t0']   # 초기   날짜 세팅
         t1 = params['t1']   # 마지막 날짜 세팅
@@ -36,7 +36,7 @@ class WbEngine:
 
         if options.excel:
             # 엑셀에서 독립변수 받기
-            read_module = wb_engine.read.ReadModule(t0, t1)  # 읽기 모듈 객체화
+            read_module = wb_engine.read.ReadModule(t0, t1, options)  # 읽기 모듈 객체화
             input_path = os.getcwd() + "\\input"            # input file 경로 설정
             iv_path = input_path + u"\\iv\\"                # 독립변수 파일 경로 /iv 세팅
             paths = os.listdir(iv_path)                     # 독립변수 파일 경로 /iv 내 파일 리스트 가지고 오기
@@ -49,7 +49,6 @@ class WbEngine:
             dv_1 = read_module.read_file(input_path + u"\\dv.xlsx")
         else:
             # 디비에서 독립변수 받기
-            qr = wb_engine.db.queries(t0, t1)                       # 쿼리 로직 객체화
             items = qr.getItems(options.userId, options.seq)   # 유저 셋팅 아이템 받기
             iv_total.extend(items)
 
@@ -276,10 +275,10 @@ class WbEngine:
                 thres = v['thres']
                 nts = v['nts']
                 if dir == 'up' :
-                    if df_warning_idx[k][i] > thres:
+                    if df_warning_idx[k][i] > thres:    # 위기여부 1
                         idx_sum += v['weight'] * 1.0
                 elif dir == 'down':
-                    if df_warning_idx[k][i] < thres:
+                    if df_warning_idx[k][i] < thres:    # 위기여부 1
                         idx_sum += v['weight'] * 1.0
             warning_idx = idx_sum / weight_sum
             df_warning_idx.set_value(i, 'IDX', warning_idx)
