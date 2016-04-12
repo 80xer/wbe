@@ -36,7 +36,7 @@ class WbEngine:
 
         if options.excel:
             # 엑셀에서 독립변수 받기
-            read_module = wb_engine.read.ReadModule(t0, t1, options)  # 읽기 모듈 객체화
+            read_module = wb_engine.read.ReadModule(params)  # 읽기 모듈 객체화
             input_path = os.getcwd() + "\\input"            # input file 경로 설정
             iv_path = input_path + u"\\iv\\"                # 독립변수 파일 경로 /iv 세팅
             paths = os.listdir(iv_path)                     # 독립변수 파일 경로 /iv 내 파일 리스트 가지고 오기
@@ -53,7 +53,7 @@ class WbEngine:
             iv_total.extend(items)
 
             # 디비에서 종속변수 받기
-            dv_1 = qr.getDv()
+            dv_1 = qr.getDv(params['dv'])
 
         # debug 용 데이터 축소
         if options.debug:

@@ -25,10 +25,10 @@ class Series():
     value : value
     freq  : 빈도(M, W, D)
     """
-    def __init__(self, options):
+    def __init__(self, params):
         self.date = []
         self.value = []
-        self.options = options
+        self.params = params
         pass
 
     def set_freq(self):
@@ -91,7 +91,7 @@ class Series():
                 origin_value.append(self.value[i])
                 origin_date.append(self.date[i])
 
-        if self.options.tshift:
+        if self.params['shift'] == 'Y':
 
             # 해수부 시계열 조정 요청
             shift = 4
@@ -137,11 +137,11 @@ class ReadModule():
     """ 생성자
     ReadModule은 t0와 t1 사이의 데이터만 읽는다.
     """
-    def __init__(self, t0, t1, options):
-        self.t0 = t0
-        self.t1 = t1
+    def __init__(self, params):
+        self.t0 = params['t0']
+        self.t1 = params['t1']
         self.utility = Utility()
-        self.options  = options
+        self.params  = params
 
     # 엑셀파일 읽기
     def read_file(self, path):
@@ -184,7 +184,7 @@ class ReadModule():
             name = sh.cell(nm_row, i).value
             code = self.utility.convert_code(sh.cell(id_row, i).value)
             unit = sh.cell(unit_row, i).value
-            series = Series(self.options)
+            series = Series(self.params)
             series.io_type = io_type
             series.code = code
             series.name = name

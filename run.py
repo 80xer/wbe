@@ -13,6 +13,7 @@ from wb_engine.report_excel.report_generator import ExcelReportGenerator
 from wb_engine.io_template import IoTemplate
 from wb_engine.db import dbHelper
 
+starttime = datetime.datetime.now()
 parser = optparse.OptionParser('usage run.py <options>')
 parser.add_option(
     '--debug',
@@ -100,7 +101,8 @@ paramsDefault = {
     'lag_cut': 6,                             # 위기발생 인식기간 제한
     'thres_cut': 0.2,                        # 상위 20% 컷
     'dv_thres': 7,                           # 종속변수 임계치
-    'scaling': '1'                          # 데이터 스케일링 유무
+    'scaling': '1',                          # 데이터 스케일링 유무
+    'shift': 'Y'
 }
 ##################################################
 
@@ -118,6 +120,10 @@ if options.default:
     params['dv_dir'] = paramsDefault['dv_dir']
     params['thres_cut'] = paramsDefault['thres_cut']
     params['dv_thres'] = paramsDefault['dv_thres']
+    params['shift'] = paramsDefault['shift']
+elif options.userId:
+    qr = wb_engine.db.queries()
+    params = qr.getSetup(options.userId, options.seq)
 else:
     print ''
     print 'Please enter input parameters below'
@@ -132,6 +138,7 @@ else:
     lag_cut = raw_input('lag_cut(MM):')
     scaling = str(raw_input('scaling(yes:1, no:0):'))
     hp_filter = raw_input('hp_filter(0 ~ 100)%:')
+    shift = raw_input('shift date(Y/N)%:')
 
     params = {}
     params['nts_thres'] = nts and float(nts) or paramsDefault['nts_thres']
@@ -150,11 +157,8 @@ else:
     params['dv_dir'] = paramsDefault['dv_dir']  # dv방향성
     params['thres_cut'] = paramsDefault['thres_cut']  # 20 고정
     params['dv_thres'] = paramsDefault['dv_thres']  # 임계치
+    params['shift'] = shift or paramsDefault['shift']  # 임계치
 
-# params = {}
-qr = wb_engine.db.queries()
-result = qr.getSetup(options.userId, options.seq)
-params = result
 
 # print options
 print '%s' %('{:*^60}'.format(''))
@@ -186,9 +190,14 @@ result = engine.run(params, options, qr)
 # report_html.make_report(result)
 
 # excel
-# xlsHelper = ExcelReportGenerator()
-# xlsHelper.make_report(result)
+xlsHelper = ExcelReportGenerator()
+xlsHelper.make_report(result)
 
 # db output
 dbHelper = wb_engine.db.outputToDB(params)
 dbHelper.insert_report(result)
+
+endtime = datetime.datetime.now()
+print '%s' %('{:*^60}'.format(''))
+print "Time difference : %s" %(endtime - starttime)
+print '%s' %('{:*^60}'.format(''))

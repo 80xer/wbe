@@ -25,7 +25,6 @@ class dbHelper():
     def exeData(self, query):
         conn = self.getConn()
         cur = conn.cursor()
-
         cur.execute(query)
         results = cur.fetchall()
 
@@ -90,16 +89,18 @@ class queries():
         result['lag_cut'] = int(dbData[LAG_CUT])
         result['scaling'] = dbData[SCALING]
         result['hp_filter'] = dbData[FILTER]
+        result['dv'] = dbData[DV]
         result['dv_dir'] = dbDataDV[DIR]
         result['thres_cut'] = 0.2  # .2 ∞Ì¡§
         result['dv_thres'] = dbDataDV[THRESHOLD]
         result['shift'] = dbData[SHIFT]
+        self.params = result
         return result
 
-    def getDv(self):
+    def getDv(self, dv):
         db = dbHelper()
         result = []
-        dataTuples = db.exeData("select '', '' union all select '', '99999' union all select 'trd_dt', 'IDX' union all select concat(a.trd_dt, '01') trd_dt, a.amount from wbs_ind_var_detail a where a.item_cd = 'dv'")
+        dataTuples = db.exeData("select '', '' union all select '', '99999' union all select 'trd_dt', 'IDX' union all select concat(a.trd_dt, '01') trd_dt, a.amount from wbs_ind_var_detail a where a.item_cd = '" + dv +"'")
         dbData = self.extract_from_list(dataTuples)
         result.extend(dbData)
         return result
@@ -174,17 +175,17 @@ class queries():
             name = data[nm_row][i]
             code = self.utility.convert_code(data[id_row][i])
             unit = data[unit_row][i]
-            series = Series()
+            series = Series(self.params)
             series.io_type = io_type
             series.code = code
             series.name = name
             series.group = unit
             series.value = du.getCol_values(data, i, start_row, len(data))
             series.date = date_result
-            series.data_cleansing(self.t0, self.t1)
+            series.data_cleansing(self.params['t0'], self.params['t1'])
             series.set_freq()
 
-            if series.date[0] <= self.t0 and series.date[-1] >= self.t1:
+            if series.date[0] <= self.params['t0'] and series.date[-1] >= self.params['t1']:
                 series_result.append(series)
 
         return series_result
@@ -198,6 +199,7 @@ class outputToDB:
         self.insert_iv(data)
         self.insert_factor(data)
         self.insert_factor_weight(data)
+        self.insert_warning_board_idx(data)
 
     def insert_iv(self, data):
         db = dbHelper()
@@ -216,19 +218,19 @@ class outputToDB:
                         iv_sh['YYYYMM'][j] + '01', '%Y%m%d'
                     ).date() == self.params['t1']:
                         elem = (str(self.params['id_nm']),
-                               str(iv_sh['YYYYMM'][j]),
-                               str(col),
-                               iv_sh[col][j],
-                               int(iv_sh_digit[col][j]),
-                               iv_info[col]['dir'],
-                               iv_info[col]['nts'],
-                               iv_info[col]['thres'],
-                               iv_info[col]['a'],
-                               iv_info[col]['b'],
-                               iv_info[col]['c'],
-                               iv_info[col]['d'],
-                               iv_info[col]['adf_test'],
-                               )
+                            str(iv_sh['YYYYMM'][j]),
+                            str(col),
+                            iv_sh[col][j],
+                            int(iv_sh_digit[col][j]),
+                            iv_info[col]['dir'],
+                            iv_info[col]['nts'],
+                            iv_info[col]['thres'],
+                            iv_info[col]['a'],
+                            iv_info[col]['b'],
+                            iv_info[col]['c'],
+                            iv_info[col]['d'],
+                            iv_info[col]['adf_test']
+                            )
                     else:
                         elem = (str(self.params['id_nm']),
                                str(iv_sh['YYYYMM'][j]),
@@ -242,7 +244,7 @@ class outputToDB:
                                None,
                                None,
                                None,
-                               None,
+                               None
                                )
 
                     insertData.append(elem)
@@ -307,7 +309,7 @@ class outputToDB:
                                 None,
                                 iv_info[col]['dir'],
                                 None,   #iv_info[col]['adf_test'],
-                                iv_info[col]['thres'],
+                                iv_info[col]['thres']
                                )
                     else:
                         elem = (str(self.params['seq']),
@@ -324,7 +326,7 @@ class outputToDB:
                                 None,
                                 None,
                                 None,
-                                None,
+                                None
                                )
 
                     insertData.append(elem)
@@ -361,12 +363,6 @@ class outputToDB:
 
         for i in range(len(weight)):
             for j in range(len(iv_list)):
-                # print self.params['seq']
-                # print self.params['id_nm']
-                # print self.params['t1']
-                # print 'FAC%s' %i
-                # print iv_list[i]
-                # print weight[i][j]
 
                 elem = (str(self.params['seq']),
                         str(self.params['id_nm']),
@@ -389,6 +385,46 @@ class outputToDB:
         try:
             cur.execute(
                 """DELETE from wbs_ind_wt_set where id_nm = %s and cre_seq = %s""",
+                (self.params['id_nm'], self.params['seq']))
+            cur.executemany(insertStr, insertData)
+            conn.commit()
+        except Exception as inst:
+            print type(inst)
+            print inst.args
+            conn.rollback()
+
+        conn.close()
+
+    def insert_warning_board_idx(self, data):
+        db = dbHelper()
+        iv_sh = data['df_warning_idx']
+
+        insertData = []
+
+        for col in iv_sh.columns:
+            if col == 'IDX' or col == 'DV':
+                for j in range(len(iv_sh[col])):
+                    elem = ()
+
+                    elem = (str(self.params['seq']),
+                            str(self.params['id_nm']),
+                            str(iv_sh['YYYYMM'][j]),
+                            str(col),
+                            iv_sh[col][j]
+                           )
+
+                    insertData.append(elem)
+
+        insertStr = """INSERT INTO wbs_idx_set
+            (CRE_SEQ, ID_NM, TRD_DT, ITEM_CD, AMOUNT)
+            VALUES(%s, %s, %s, %s, %s)"""
+
+        conn = db.getConn()
+        cur = conn.cursor()
+
+        try:
+            cur.execute(
+                """DELETE from wbs_idx_set where id_nm = %s and cre_seq = %s""",
                 (self.params['id_nm'], self.params['seq']))
             cur.executemany(insertStr, insertData)
             conn.commit()
