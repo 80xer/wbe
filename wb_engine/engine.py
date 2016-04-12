@@ -7,7 +7,6 @@ from wb_engine.nts import NtsCaldulator
 from wb_engine.pca import PcaCalculator
 from operator import itemgetter
 from wb_engine.io_template import IoTemplate
-from wb_engine.db import dbHelper
 import copy
 
 reload(sys)

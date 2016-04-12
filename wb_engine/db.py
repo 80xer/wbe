@@ -1,5 +1,5 @@
 #-*- coding:cp949 -*-
-import sys, MySQLdb, datetime
+import sys, MySQLdb, datetime, wb_engine.const
 from wb_engine.utility import DateUtility
 from wb_engine.utility import Utility
 from wb_engine.read import Series
@@ -46,8 +46,9 @@ class dbHelper():
         conn.close()
 
 class queries():
-    def __init__(self):
+    def __init__(self, const):
         self.utility = Utility()
+        self.CONST = const
 
     def getSetup(self, id, seq):
 
@@ -71,10 +72,10 @@ class queries():
         THRESHOLD = 2
 
         db = dbHelper()
-        dataTuples = db.exeData("select * from wbs_id_setup where id_nm = '" + id + "' and cre_seq = " + seq + ";")
+        dataTuples = db.exeData(self.CONST.QR_SELECT_ID_SETUP % (id, seq))
         dbData = dataTuples[0]
 
-        dataTuples = db.exeData("select * from wbs_dv_mast where item_cd = '" + dbData[DV] + "';")
+        dataTuples = db.exeData(self.CONST.QR_SELECT_DV_MAST % dbData[DV])
         dbDataDV = dataTuples[0]
 
         result = {}
@@ -100,14 +101,14 @@ class queries():
     def getDv(self, dv):
         db = dbHelper()
         result = []
-        dataTuples = db.exeData("select '', '' union all select '', '99999' union all select 'trd_dt', 'IDX' union all select concat(a.trd_dt, '01') trd_dt, a.amount from wbs_ind_var_detail a where a.item_cd = '" + dv +"'")
+        dataTuples = db.exeData(self.CONST.QR_SELECT_DV % dv)
         dbData = self.extract_from_list(dataTuples)
         result.extend(dbData)
         return result
 
     def getItems(self, id, seq):
         db = dbHelper()
-        result = db.exeData("select b.* from wbs_id_item a, wbs_ind_var_mast b where a.id_nm = '" + id + "' and a.cre_seq = '" + seq + "' and a.item_cd = b.item_cd")
+        items = db.exeData(self.CONST.QR_SELECT_ITEM % (id, seq))
 
         itemCdSelect = []
         itemNmSelect = []
@@ -120,12 +121,12 @@ class queries():
         pathSelect.append("select 'TRD_DT', ")
         dataSelect.append("select concat(a.trd_dt,'01'), ")
 
-        for item in result:
+        for item in items:
             itemCdSelect.append("MAX(iF(a.item_cd = '" + item[0] + "', a.item_cd, null)) 'I'")
             itemNmSelect.append("MAX(iF(a.item_cd = '" + item[0] + "', concat(a.item_nm, '_', a.unit), null)) ")
             pathSelect.append("MAX(iF(a.item_cd = '" + item[0] + "', a.path, null)) ")
             dataSelect.append("MAX(iF(a.item_cd = '" + item[0] + "', a.amount, null)) ")
-            if cnt < len(result) - 1:
+            if cnt < len(items) - 1:
                 itemCdSelect.append(', ')
                 itemNmSelect.append(', ')
                 pathSelect.append(', ')
@@ -192,8 +193,9 @@ class queries():
 
 class outputToDB:
 
-    def __init__(self, params):
+    def __init__(self, params, const):
         self.params = params
+        self.CONST = const
 
     def insert_report(self, data):
         self.insert_iv(data)
@@ -249,19 +251,13 @@ class outputToDB:
 
                     insertData.append(elem)
 
-        insertStr = """INSERT INTO wbs_ind_var_detail_set
-            (ID_NM, TRD_DT, ITEM_CD, DIFF_AMOUNT, CRISIS_GB, UP_DN, NTS,
-            THRESHOLD, VAR_A, VAR_B, VAR_C, VAR_D, ADF_GB)
-            VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-
         conn = db.getConn()
         cur = conn.cursor()
 
         try:
-            cur.execute(
-                """DELETE from wbs_ind_var_detail_set where id_nm = %s""",
-                self.params['id_nm'])
-            cur.executemany(insertStr, insertData)
+            cur.execute(self.CONST.QR_DELETE_IND_VAR_DETAIL_SET,
+                        self.params['id_nm'])
+            cur.executemany(self.CONST.QR_INSERT_IND_VAR_DETAIL_SET, insertData)
             conn.commit()
         except Exception as inst:
             print type(inst)
@@ -331,19 +327,14 @@ class outputToDB:
 
                     insertData.append(elem)
 
-        insertStr = """INSERT INTO wbs_fact_info_set
-            (CRE_SEQ, ID_NM, TRD_DT, FACT_NM, AMOUNT, FACT_WT, FACT_NTS,
-            VAR_A, VAR_B, VAR_C, VAR_D, CRISIS_GB, UP_DN, ADF_GB, FACT_THRESHOLD )
-            VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-
         conn = db.getConn()
         cur = conn.cursor()
 
         try:
             cur.execute(
-                """DELETE from wbs_fact_info_set where id_nm = %s and cre_seq = %s""",
+                self.CONST.QR_DELETE_FACT_INFO_SET,
                 (self.params['id_nm'], self.params['seq']))
-            cur.executemany(insertStr, insertData)
+            cur.executemany(self.CONST.QR_INSERT_FACT_INFO_SET, insertData)
             conn.commit()
         except Exception as inst:
             print type(inst)
@@ -374,19 +365,14 @@ class outputToDB:
 
                 insertData.append(elem)
 
-
-        insertStr = """INSERT INTO wbs_ind_wt_set
-            (CRE_SEQ, ID_NM, TRD_DT, FACT_NM, ITEM_CD, ITEM_WT)
-            VALUES(%s, %s, %s, %s, %s, %s)"""
-
         conn = db.getConn()
         cur = conn.cursor()
 
         try:
             cur.execute(
-                """DELETE from wbs_ind_wt_set where id_nm = %s and cre_seq = %s""",
+                self.CONST.QR_DELETE_IND_WT_SET,
                 (self.params['id_nm'], self.params['seq']))
-            cur.executemany(insertStr, insertData)
+            cur.executemany(self.CONST.QR_INSERT_IND_WT_SET, insertData)
             conn.commit()
         except Exception as inst:
             print type(inst)
@@ -415,18 +401,14 @@ class outputToDB:
 
                     insertData.append(elem)
 
-        insertStr = """INSERT INTO wbs_idx_set
-            (CRE_SEQ, ID_NM, TRD_DT, ITEM_CD, AMOUNT)
-            VALUES(%s, %s, %s, %s, %s)"""
-
         conn = db.getConn()
         cur = conn.cursor()
 
         try:
             cur.execute(
-                """DELETE from wbs_idx_set where id_nm = %s and cre_seq = %s""",
+                self.CONST.QR_DELETE_IDX_SET,
                 (self.params['id_nm'], self.params['seq']))
-            cur.executemany(insertStr, insertData)
+            cur.executemany(self.CONST.QR_INSERT_IDX_SET, insertData)
             conn.commit()
         except Exception as inst:
             print type(inst)

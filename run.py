@@ -5,13 +5,13 @@ import wb_engine.read
 import datetime
 import os
 import optparse
+import wb_engine.db
 from wb_engine.utility import DateUtility
 from wb_engine.io import IO
 from wb_engine.preprocessing import PreProcessing
 from wb_engine.engine import WbEngine
 from wb_engine.report_excel.report_generator import ExcelReportGenerator
 from wb_engine.io_template import IoTemplate
-from wb_engine.db import dbHelper
 
 starttime = datetime.datetime.now()
 parser = optparse.OptionParser('usage run.py <options>')
@@ -106,6 +106,8 @@ paramsDefault = {
 }
 ##################################################
 
+const = wb_engine.const.Const(options.fix)
+
 if options.default:
     params = {}
     params['nts_thres'] = paramsDefault['nts_thres']
@@ -122,7 +124,10 @@ if options.default:
     params['dv_thres'] = paramsDefault['dv_thres']
     params['shift'] = paramsDefault['shift']
 elif options.userId:
-    qr = wb_engine.db.queries()
+    qr = wb_engine.db.queries(const)
+    params = qr.getSetup(options.userId, options.seq)
+elif options.fix:
+    qr = wb_engine.db.queries(options.fix)
     params = qr.getSetup(options.userId, options.seq)
 else:
     print ''
@@ -190,11 +195,11 @@ result = engine.run(params, options, qr)
 # report_html.make_report(result)
 
 # excel
-xlsHelper = ExcelReportGenerator()
+xlsHelper = ExcelReportGenerator(options.userId, options.seq)
 xlsHelper.make_report(result)
 
 # db output
-dbHelper = wb_engine.db.outputToDB(params)
+dbHelper = wb_engine.db.outputToDB(params, const)
 dbHelper.insert_report(result)
 
 endtime = datetime.datetime.now()

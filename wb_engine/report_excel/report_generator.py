@@ -5,9 +5,13 @@ sys.setdefaultencoding('utf-8')
 
 class ExcelReportGenerator:
 
+    def __init__(self, id, seq):
+        self.id_nm = id
+        self.seq = seq
+
     def get_report_path(self):
         path = os.getcwd()
-        return path + "\\output\\report_%s.xlsx"%(datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
+        return path + "\\output\\report_%s_%s.xlsx"%(self.id_nm, self.seq)
 
     def create_excel_file(self, path):
         self._wb = xlsxwriter.Workbook(path)
