@@ -402,7 +402,7 @@ class outputToDB:
         insertData = []
 
         for col in iv_sh.columns:
-            if col == 'IDX' or col == 'DV':
+            if col == 'IDX':
                 for j in range(len(iv_sh[col])):
                     elem = ()
 
