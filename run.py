@@ -108,6 +108,10 @@ paramsDefault = {
 
 const = wb_engine.const.Const(options.fix)
 
+if const.isFixed():
+    options.userId = 'system'
+    options.seq = '1'
+
 if options.default:
     params = {}
     params['nts_thres'] = paramsDefault['nts_thres']
@@ -125,9 +129,6 @@ if options.default:
     params['shift'] = paramsDefault['shift']
 elif options.userId:
     qr = wb_engine.db.queries(const)
-    params = qr.getSetup(options.userId, options.seq)
-elif options.fix:
-    qr = wb_engine.db.queries(options.fix)
     params = qr.getSetup(options.userId, options.seq)
 else:
     print ''
@@ -199,7 +200,7 @@ xlsHelper = ExcelReportGenerator(options.userId, options.seq)
 xlsHelper.make_report(result)
 
 # db output
-dbHelper = wb_engine.db.outputToDB(params, const)
+dbHelper = wb_engine.db.OutputToDB(params, const)
 dbHelper.insert_report(result)
 
 endtime = datetime.datetime.now()

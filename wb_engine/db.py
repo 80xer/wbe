@@ -7,7 +7,8 @@ from wb_engine.read import Series
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-class dbHelper():
+
+class DbHelper():
     def __init__(self):
         self.__wbsDbConfig = {
             'user': 'wbsuser',
@@ -71,7 +72,8 @@ class queries():
         DIR = 3
         THRESHOLD = 2
 
-        db = dbHelper()
+        db = DbHelper()
+
         dataTuples = db.exeData(self.CONST.QR_SELECT_ID_SETUP % (id, seq))
         dbData = dataTuples[0]
 
@@ -99,7 +101,7 @@ class queries():
         return result
 
     def getDv(self, dv):
-        db = dbHelper()
+        db = DbHelper()
         result = []
         dataTuples = db.exeData(self.CONST.QR_SELECT_DV % dv)
         dbData = self.extract_from_list(dataTuples)
@@ -107,7 +109,7 @@ class queries():
         return result
 
     def getItems(self, id, seq):
-        db = dbHelper()
+        db = DbHelper()
         items = db.exeData(self.CONST.QR_SELECT_ITEM % (id, seq))
 
         itemCdSelect = []
@@ -191,20 +193,25 @@ class queries():
 
         return series_result
 
-class outputToDB:
+
+class OutputToDB:
 
     def __init__(self, params, const):
         self.params = params
         self.CONST = const
 
     def insert_report(self, data):
-        self.insert_iv(data)
-        self.insert_factor(data)
-        self.insert_factor_weight(data)
-        self.insert_warning_board_idx(data)
+        try:
+            self.insert_iv(data)
+            self.insert_factor(data)
+            self.insert_factor_weight(data)
+            self.insert_warning_board_idx(data)
+        except Exception as inst:
+            print type(inst)
+            print inst.args
 
     def insert_iv(self, data):
-        db = dbHelper()
+        db = DbHelper()
         iv_sh = data['df_iv_sh']
         iv_sh_digit = data['df_iv_sh_digit']
         iv_info = data['iv_info_dict']
@@ -220,19 +227,19 @@ class outputToDB:
                         iv_sh['YYYYMM'][j] + '01', '%Y%m%d'
                     ).date() == self.params['t1']:
                         elem = (str(self.params['id_nm']),
-                            str(iv_sh['YYYYMM'][j]),
-                            str(col),
-                            iv_sh[col][j],
-                            int(iv_sh_digit[col][j]),
-                            iv_info[col]['dir'],
-                            iv_info[col]['nts'],
-                            iv_info[col]['thres'],
-                            iv_info[col]['a'],
-                            iv_info[col]['b'],
-                            iv_info[col]['c'],
-                            iv_info[col]['d'],
-                            iv_info[col]['adf_test']
-                            )
+                                str(iv_sh['YYYYMM'][j]),
+                                str(col),
+                                iv_sh[col][j],
+                                int(iv_sh_digit[col][j]),
+                                iv_info[col]['dir'],
+                                iv_info[col]['nts'],
+                                iv_info[col]['thres'],
+                                iv_info[col]['a'],
+                                iv_info[col]['b'],
+                                iv_info[col]['c'],
+                                iv_info[col]['d'],
+                                iv_info[col]['adf_test']
+                                )
                     else:
                         elem = (str(self.params['id_nm']),
                                str(iv_sh['YYYYMM'][j]),
@@ -267,7 +274,7 @@ class outputToDB:
         conn.close()
 
     def insert_factor(self, data):
-        db = dbHelper()
+        db = DbHelper()
         iv_sh = data['df_factor_yyyymm']
         iv_info = data['factor_info_dict']
         fw = data['factor_weight']
@@ -284,6 +291,8 @@ class outputToDB:
                 code_ordered.append(c)
         code_ordered.append('DV')
 
+        id_info = (str(self.params['seq']), str(self.params['id_nm']))
+
         for col in code_ordered:
             if col != 'YYYYMM' and col != 'DATE' and col != 'DV':
                 num = col.replace('FAC', '')
@@ -291,9 +300,7 @@ class outputToDB:
                     if datetime.datetime.strptime(
                         iv_sh['YYYYMM'][j] + '01', '%Y%m%d'
                     ).date() == self.params['t1']:
-                        elem = (str(self.params['seq']),
-                                str(self.params['id_nm']),
-                                str(iv_sh['YYYYMM'][j]),
+                        elem = (str(iv_sh['YYYYMM'][j]),
                                 str(col),
                                 iv_sh[col][j],
                                 fracs[int(num)],
@@ -308,9 +315,7 @@ class outputToDB:
                                 iv_info[col]['thres']
                                )
                     else:
-                        elem = (str(self.params['seq']),
-                                str(self.params['id_nm']),
-                                str(iv_sh['YYYYMM'][j]),
+                        elem = (str(iv_sh['YYYYMM'][j]),
                                 str(col),
                                 iv_sh[col][j],
                                 None,
@@ -325,15 +330,22 @@ class outputToDB:
                                 None
                                )
 
+                    if not self.CONST.isFixed():
+                        elem = id_info + elem
+
                     insertData.append(elem)
 
         conn = db.getConn()
         cur = conn.cursor()
 
         try:
-            cur.execute(
-                self.CONST.QR_DELETE_FACT_INFO_SET,
-                (self.params['id_nm'], self.params['seq']))
+            if self.CONST.isFixed():
+                cur.execute(
+                    self.CONST.QR_DELETE_FACT_INFO_SET)
+            else:
+                cur.execute(
+                    self.CONST.QR_DELETE_FACT_INFO_SET,
+                    (self.params['id_nm'], self.params['seq']))
             cur.executemany(self.CONST.QR_INSERT_FACT_INFO_SET, insertData)
             conn.commit()
         except Exception as inst:
@@ -344,24 +356,26 @@ class outputToDB:
         conn.close()
 
     def insert_factor_weight(self, data):
-        db = dbHelper()
+        db = DbHelper()
         fw = data['factor_weight']
         iv_list = fw['col_list']
         weight = fw['weight']
 
         insertData = []
         elem = ()
+        id_info = (str(self.params['seq']), str(self.params['id_nm']))
 
         for i in range(len(weight)):
             for j in range(len(iv_list)):
 
-                elem = (str(self.params['seq']),
-                        str(self.params['id_nm']),
-                        str(self.params['t1'].strftime('%Y%d')),
+                elem = (str(self.params['t1'].strftime('%Y%d')),
                         'FAC%s' %i,
                         iv_list[j],
                         weight[i][j]
                        )
+
+                if not self.CONST.isFixed():
+                    elem = id_info + elem
 
                 insertData.append(elem)
 
@@ -369,9 +383,14 @@ class outputToDB:
         cur = conn.cursor()
 
         try:
-            cur.execute(
-                self.CONST.QR_DELETE_IND_WT_SET,
-                (self.params['id_nm'], self.params['seq']))
+            if self.CONST.isFixed():
+                cur.execute(
+                    self.CONST.QR_DELETE_IND_WT_SET)
+            else:
+                cur.execute(
+                    self.CONST.QR_DELETE_IND_WT_SET,
+                    (self.params['id_nm'], self.params['seq']))
+
             cur.executemany(self.CONST.QR_INSERT_IND_WT_SET, insertData)
             conn.commit()
         except Exception as inst:
@@ -382,22 +401,24 @@ class outputToDB:
         conn.close()
 
     def insert_warning_board_idx(self, data):
-        db = dbHelper()
+        db = DbHelper()
         iv_sh = data['df_warning_idx']
 
         insertData = []
+        id_info = (str(self.params['seq']), str(self.params['id_nm']))
 
         for col in iv_sh.columns:
             if col == 'IDX':
                 for j in range(len(iv_sh[col])):
                     elem = ()
 
-                    elem = (str(self.params['seq']),
-                            str(self.params['id_nm']),
-                            str(iv_sh['YYYYMM'][j]),
+                    elem = (str(iv_sh['YYYYMM'][j]),
                             str(col),
                             iv_sh[col][j]
                            )
+
+                    if not self.CONST.isFixed():
+                        elem = id_info + elem
 
                     insertData.append(elem)
 
@@ -405,9 +426,14 @@ class outputToDB:
         cur = conn.cursor()
 
         try:
-            cur.execute(
-                self.CONST.QR_DELETE_IDX_SET,
-                (self.params['id_nm'], self.params['seq']))
+            if self.CONST.isFixed():
+                cur.execute(
+                    self.CONST.QR_DELETE_IDX_SET)
+            else:
+                cur.execute(
+                    self.CONST.QR_DELETE_IDX_SET,
+                    (self.params['id_nm'], self.params['seq']))
+
             cur.executemany(self.CONST.QR_INSERT_IDX_SET, insertData)
             conn.commit()
         except Exception as inst:
