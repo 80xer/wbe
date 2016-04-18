@@ -110,7 +110,6 @@ const = wb_engine.const.Const(options.fix)
 
 if const.isFixed():
     options.userId = 'system'
-    options.seq = '1'
 
 if options.default:
     params = {}

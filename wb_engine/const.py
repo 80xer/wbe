@@ -77,23 +77,51 @@ class Const():
 
     @constant
     def QR_DELETE_IND_WT_SET(self):  # 독립변수 비중 값들 삭제
-        return """DELETE from wbs_ind_wt_set where id_nm = %s and cre_seq = %s"""
+        query = """DELETE from """ + self.TBL_IND_WT
+        if not self.isFixed():
+            query += """ where id_nm = %s and cre_seq = %s"""
+
+        return query
 
     @constant
     def QR_INSERT_IND_WT_SET(self):  # 독립변수 비중 값들 생성
-        return """INSERT INTO wbs_ind_wt_set
+
+        query = """INSERT INTO """ + self.TBL_IND_WT
+
+        if self.isFixed():
+            query += """
+            (TRD_DT, FACT_NM, ITEM_CD, ITEM_WT)
+            VALUES(%s, %s, %s, %s)"""
+        else:
+            query += """
             (CRE_SEQ, ID_NM, TRD_DT, FACT_NM, ITEM_CD, ITEM_WT)
             VALUES(%s, %s, %s, %s, %s, %s)"""
 
+        return query
+
     @constant
     def QR_DELETE_IDX_SET(self):  # 위기지수 삭제
-        return """DELETE from wbs_idx_set where id_nm = %s and cre_seq = %s"""
+        query = """DELETE from """ + self.TBL_IDX
+        if not self.isFixed():
+            query += """ where id_nm = %s and cre_seq = %s"""
+
+        return query
 
     @constant
     def QR_INSERT_IDX_SET(self):  # 위기지수 생성
-        return """INSERT INTO wbs_idx_set
+
+        query = """INSERT INTO """ + self.TBL_IDX
+
+        if self.isFixed():
+            query += """
+            (TRD_DT, ITEM_CD, AMOUNT)
+            VALUES(%s, %s, %s)"""
+        else:
+            query += """
             (CRE_SEQ, ID_NM, TRD_DT, ITEM_CD, AMOUNT)
             VALUES(%s, %s, %s, %s, %s)"""
+
+        return query
 
     # 테이블명 상수
     @constant

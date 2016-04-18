@@ -297,6 +297,10 @@ class OutputToDB:
             if col != 'YYYYMM' and col != 'DATE' and col != 'DV':
                 num = col.replace('FAC', '')
                 for j in range(len(iv_sh[col])):
+                    if iv_info[col]['dir'] == 'U':
+                        crisis_gb = 1 if iv_sh[col][j] > iv_info[col]['thres'] else 0
+                    elif iv_info[col]['dir'] == 'D':
+                        crisis_gb = 1 if iv_sh[col][j] < iv_info[col]['thres'] else 0
                     if datetime.datetime.strptime(
                         iv_sh['YYYYMM'][j] + '01', '%Y%m%d'
                     ).date() == self.params['t1']:
@@ -309,7 +313,7 @@ class OutputToDB:
                                 iv_info[col]['b'],
                                 iv_info[col]['c'],
                                 iv_info[col]['d'],
-                                None,
+                                crisis_gb,
                                 iv_info[col]['dir'],
                                 None,   #iv_info[col]['adf_test'],
                                 iv_info[col]['thres']
@@ -324,10 +328,10 @@ class OutputToDB:
                                 None,
                                 None,
                                 None,
+                                crisis_gb,
+                                iv_info[col]['dir'],
                                 None,
-                                None,
-                                None,
-                                None
+                                iv_info[col]['thres']
                                )
 
                     if not self.CONST.isFixed():
