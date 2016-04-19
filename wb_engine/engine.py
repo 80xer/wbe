@@ -148,7 +148,7 @@ class WbEngine:
         df_iv_sh = df_iv
         df_iv_sh_out = df_iv_out
 
-        if params['scaling'] == '1':
+        if int(params['scaling']) == 1:
             df_iv_sh, df_iv_sh_out = pp.scale_iv(df_iv_sh, df_iv_sh_out)
 
         df_iv_sh['DV'] = df_dv[df_dv.columns[2]]
