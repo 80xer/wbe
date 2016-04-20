@@ -372,7 +372,7 @@ class OutputToDB:
         for i in range(len(weight)):
             for j in range(len(iv_list)):
 
-                elem = (str(self.params['t1'].strftime('%Y%d')),
+                elem = (str(self.params['t1'].strftime('%Y%m')),
                         'FAC%s' %i,
                         iv_list[j],
                         weight[i][j]
