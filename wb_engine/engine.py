@@ -159,7 +159,7 @@ class WbEngine:
         dv_crisis_digit_list, dv_thres = \
             nts_module.cal_nts_total(df_iv_sh, iv_info_dict, params['intv'],
                                      params['thres_cut'], params['dv_thres'],
-                                     params['lag_cut'])
+                                     params['lag_cut'], params['dv_dir'])
         # iv_info_dict 에 nts 관련 정보 적재  (2016.03.10) nts 계산에서 \
         # 선행기간 내 위기식별 구간 제한 추가작업 lag_cut
         # nts_module.cal_nts_by_digit(df_iv_sh, dv_crisis_digit_list)
@@ -211,7 +211,7 @@ class WbEngine:
         # df_factor['DV'] = df_dv_sh[df_dv_sh.columns[2]]
         nts_module.cal_nts_total(df_factor_series, factor_info_dict,
                                  params['intv'], params['thres_cut'],
-                                 params['dv_thres'] , params['lag_cut'])
+                                 params['dv_thres'], params['lag_cut'], params['dv_dir'])
         # (2016.03.10) nts 계산에서 선행기간 내 위기식별 구간 제한 추가작업 lag_cut
 
         for i in range(len(df_factor.columns.tolist())):

@@ -10,11 +10,11 @@ from scipy.interpolate import interp1d
 class NtsCaldulator():       
 
     # 호출하는 프로시저
-    def cal_nts_total(self, total_set_df, iv_info_dict, intv, thres_cut, dv_thres, lag_cut):
+    def cal_nts_total(self, total_set_df, iv_info_dict, intv, thres_cut, dv_thres, lag_cut, dv_dir):
         
         dv = total_set_df['DV'].tolist()        
         #dv_crisis_digit_list, thres = self.get_dv_crisis_info(dv, 1, True) # 종속변수 위기 여부와 관련해서는 본 함수를 수정하면 된다.
-        dv_crisis_digit_list, thres = self.get_dv_crisis_info_specific_value(dv, dv_thres, True)
+        dv_crisis_digit_list, thres = self.get_dv_crisis_info_specific_value(dv, dv_thres, dv_dir)
 
         for c in total_set_df.columns:
             if c != 'DV' and c != 'YYYYMM' and c != 'DATE':
@@ -138,10 +138,10 @@ class NtsCaldulator():
                     crisis_digit.append(False)
         return crisis_digit, thres
 
-    def get_dv_crisis_info_specific_value(self, dv, thres, dir_up=True):
+    def get_dv_crisis_info_specific_value(self, dv, thres, dir_up="U"):
         crisis_digit = []
         for d in dv:
-            if dir_up:
+            if dir_up == "U":
                 if d > thres:
                     crisis_digit.append(True)
                 else:
