@@ -91,7 +91,7 @@ class Series():
                 origin_value.append(self.value[i])
                 origin_date.append(self.date[i])
 
-        if self.params['shift'] == 'Y':
+        if self.params['shift'] == 'Y' and t1 > idx:
 
             # 해수부 시계열 조정 요청
             shift = 4
@@ -99,23 +99,23 @@ class Series():
             du = DateUtility()
 
             diffmonth = du.diff_month(t1, idx)
+            if diffmonth > 0:
+                if diffmonth < shift:
+                    shift = diffmonth
 
-            if diffmonth < shift:
-                shift = diffmonth
+                self.value = self.shiftlist(shift, self.value)
 
-            self.value = self.shiftlist(shift, self.value)
+                for i in range(len(self.value)):
+                    if self.value[i] != '' and self.value[i] != None:
+                        new_value.append(self.value[i])
+                        new_date.append(self.date[i])
 
-            for i in range(len(self.value)):
-                if self.value[i] != '' and self.value[i] != None:
-                    new_value.append(self.value[i])
-                    new_date.append(self.date[i])
+                # self.value = origin_value
+                # self.date = origin_date
 
-            # self.value = origin_value
-            # self.date = origin_date
-
-            # 해수부 시계열 조정 요청
-            self.value = new_value
-            self.date = new_date
+                # 해수부 시계열 조정 요청
+                self.value = new_value
+                self.date = new_date
 
         else:
             self.value = origin_value
